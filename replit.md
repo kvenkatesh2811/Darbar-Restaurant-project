@@ -1,10 +1,11 @@
-# [Project name]
+# Darbar Multi-Cuisine Restaurant
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A premium, mobile-responsive restaurant website for Darbar Multi-Cuisine Restaurant in Kurnool, Andhra Pradesh — serving authentic Rayalaseema and multi-cuisine dishes.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080, path /api)
+- `pnpm --filter @workspace/darbar-restaurant run dev` — run the frontend (port 24045, path /)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
@@ -14,6 +15,7 @@ _Replace the heading above with the project's name, and this line with one sente
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React + Vite, TailwindCSS, Framer Motion, wouter, shadcn/ui
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
@@ -22,15 +24,26 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — OpenAPI source of truth
+- `lib/db/src/schema/` — Drizzle table definitions (categories, menu-items, specials, reviews, feedback, leads, orders)
+- `artifacts/api-server/src/routes/` — Express route handlers (menu, specials, reviews, feedback, leads, orders, stats)
+- `artifacts/darbar-restaurant/src/pages/` — Frontend pages (Home, Menu, Order, Admin)
+- `artifacts/darbar-restaurant/src/components/` — Shared components (Navbar, Footer, FloatingWhatsApp, LeadPopup, ScrollToTop, ReviewModal)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- OpenAPI-first: spec defines contracts, Orval generates React Query hooks (frontend) and Zod schemas (backend)
+- Order items stored as JSONB in PostgreSQL for flexible cart data
+- Menu items joined with categories table on categorySlug for category names
+- Stats computed on-the-fly via SQL aggregations (no materialized views needed at this scale)
+- Lead popup uses sessionStorage to show only once per browser session
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Homepage with hero, about, menu preview, today's specials, photo gallery, reviews, opening hours, Google Map, contact, footer
+- Full menu page with category tabs, search, veg/non-veg filter, QR code for sharing
+- Pre-order pickup page with item cart and customer details form
+- Admin dashboard with stats, orders management, menu CRUD, leads, reviews, feedback
 
 ## User preferences
 
@@ -38,7 +51,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `qrcode` package must be installed in `@workspace/darbar-restaurant` (already done)
+- Menu items use `numeric` Drizzle type — always parse with `parseFloat()` before sending to client
+- Order `items` column is JSONB typed as `Array<{menuItemId, menuItemName, quantity, price}>`
 
 ## Pointers
 
