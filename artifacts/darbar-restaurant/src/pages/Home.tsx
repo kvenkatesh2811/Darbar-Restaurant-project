@@ -1,29 +1,49 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, Phone, ChevronRight } from "lucide-react";
+import { Star, MapPin, Clock, Phone, ChevronRight, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { RESTAURANT_DETAILS } from "@/lib/constants";
-import { useListMenuItems, useListSpecials, useListReviews } from "@workspace/api-client-react";
+import { useListMenuItems, useListSpecials, useListReviews, useSubmitFeedback } from "@workspace/api-client-react";
 import { ReviewModal } from "@/components/ReviewModal";
 import { LeadPopup } from "@/components/LeadPopup";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const { data: menuItems } = useListMenuItems();
   const { data: specials } = useListSpecials();
   const { data: reviews } = useListReviews();
+  const { toast } = useToast();
+  const submitFeedback = useSubmitFeedback();
 
-  // Scroll to top on mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const [feedbackForm, setFeedbackForm] = useState({ name: "", phone: "", comment: "", rating: 5 });
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   const featuredItems = menuItems?.slice(0, 6) || [];
   const featuredSpecial = specials?.find(s => s.isActive) || specials?.[0];
+
+  const handleFeedbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!feedbackForm.name.trim() || !feedbackForm.comment.trim()) {
+      toast({ variant: "destructive", title: "Please fill in your name and message." });
+      return;
+    }
+    submitFeedback.mutate(
+      { data: { name: feedbackForm.name, phone: feedbackForm.phone || undefined, comment: feedbackForm.comment, rating: feedbackForm.rating } },
+      {
+        onSuccess: () => { setFeedbackSubmitted(true); toast({ title: "Thank you for your feedback!" }); },
+        onError: () => toast({ variant: "destructive", title: "Something went wrong. Please try again." }),
+      }
+    );
+  };
 
   return (
     <div className="flex flex-col w-full">
@@ -265,6 +285,103 @@ export default function Home() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FEEDBACK SECTION */}
+      <section className="py-24 bg-background border-y border-border">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-primary font-medium tracking-widest uppercase mb-2">We'd Love to Hear From You</h2>
+              <h3 className="font-serif text-4xl md:text-5xl font-bold mb-6">Send Us Feedback</h3>
+              <p className="text-muted-foreground leading-relaxed mb-8">
+                Your opinion helps us serve you better. Share your experience, suggestions, or anything you'd like us to know.
+              </p>
+              <div className="space-y-4 text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <Phone className="h-4 w-4 text-primary" />
+                  </div>
+                  <span>{RESTAURANT_DETAILS.phone}</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <MapPin className="h-4 w-4 text-primary" />
+                  </div>
+                  <span>{RESTAURANT_DETAILS.address}</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {feedbackSubmitted ? (
+                <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-2xl p-10 text-center">
+                  <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Send className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h4 className="font-serif text-2xl font-bold mb-2">Feedback Sent!</h4>
+                  <p className="text-muted-foreground mb-6">Thank you for taking the time to share your experience with us.</p>
+                  <Button variant="outline" onClick={() => { setFeedbackSubmitted(false); setFeedbackForm({ name: "", phone: "", comment: "", rating: 5 }); }}>
+                    Send Another
+                  </Button>
+                </div>
+              ) : (
+                <Card className="border-border shadow-md">
+                  <CardContent className="p-6">
+                    <form onSubmit={handleFeedbackSubmit} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">Your Name *</label>
+                          <Input
+                            placeholder="Full name"
+                            value={feedbackForm.name}
+                            onChange={e => setFeedbackForm(f => ({ ...f, name: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-medium">Phone (Optional)</label>
+                          <Input
+                            placeholder="+91 98765 43210"
+                            value={feedbackForm.phone}
+                            onChange={e => setFeedbackForm(f => ({ ...f, phone: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-medium">Rating</label>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setFeedbackForm(f => ({ ...f, rating: star }))}
+                              className={`p-1 transition-colors ${star <= feedbackForm.rating ? "text-yellow-400" : "text-muted-foreground/30 hover:text-yellow-200"}`}
+                            >
+                              <Star className="h-6 w-6 fill-current" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-medium">Your Message *</label>
+                        <Textarea
+                          placeholder="Tell us about your experience, suggestions, or any special requests…"
+                          className="min-h-[100px] resize-none"
+                          value={feedbackForm.comment}
+                          onChange={e => setFeedbackForm(f => ({ ...f, comment: e.target.value }))}
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={submitFeedback.isPending}>
+                        <Send className="mr-2 h-4 w-4" />
+                        {submitFeedback.isPending ? "Sending..." : "Send Feedback"}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         </div>
       </section>

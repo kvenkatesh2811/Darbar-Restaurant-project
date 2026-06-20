@@ -36,9 +36,10 @@ export function LeadPopup() {
     if (!hasSeenPopup) {
       const timer = setTimeout(() => {
         setIsOpen(true);
-      }, 10000); // 10 seconds
+      }, 10000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, []);
 
   const handleOpenChange = (open: boolean) => {

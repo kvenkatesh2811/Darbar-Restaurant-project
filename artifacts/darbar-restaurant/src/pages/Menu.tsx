@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import QRCode from "qrcode";
 import { useListMenuItems, useListCategories } from "@workspace/api-client-react";
-import { HARDCODED_MENU } from "@/lib/constants";
 
 export default function Menu() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,29 +20,14 @@ export default function Menu() {
   const { data: apiMenuItems } = useListMenuItems();
   const { data: categories } = useListCategories();
 
-  // Merge hardcoded menu with API menu items if available, avoiding duplicates by name
-  const allItems = [...HARDCODED_MENU];
-  if (apiMenuItems) {
-    apiMenuItems.forEach(apiItem => {
-      if (!allItems.some(item => item.name.toLowerCase() === apiItem.name.toLowerCase())) {
-        allItems.push(apiItem as any);
-      }
-    });
-  }
-
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    // Generate QR Code for the menu page
     const generateQR = async () => {
       try {
         const url = await QRCode.toDataURL(window.location.href, {
           width: 300,
           margin: 2,
-          color: {
-            dark: '#1F2937', // Dark Gray
-            light: '#FFFFFF'
-          }
+          color: { dark: "#1F2937", light: "#FFFFFF" },
         });
         setQrCodeDataUrl(url);
       } catch (err) {
@@ -53,17 +37,20 @@ export default function Menu() {
     generateQR();
   }, []);
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => { window.print(); };
 
-  // Derive categories from items
-  const uniqueCategories = Array.from(new Set(allItems.map(item => item.categoryName)));
+  const allItems = apiMenuItems || [];
+
+  // Derive categories from API categories or from items
+  const uniqueCategories = categories
+    ? categories.map(c => c.name)
+    : Array.from(new Set(allItems.map(item => item.categoryName)));
 
   // Filter items
   const filteredItems = allItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesVeg = isVegOnly ? item.isVeg === true : true;
     return matchesSearch && matchesVeg;
   });
