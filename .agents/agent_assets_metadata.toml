@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "lNz3Qfnpn_7OGwo9xlMj2"
+uri = "file://artifacts/darbar-restaurant/public/images/hero-biryani.png"
+type = "image"
+title = "Hero Andhra Biryani"
+
+[[generated]]
+id = "zJn3VBQpcq2sv_kaQDqPX"
+uri = "file://artifacts/darbar-restaurant/public/images/gallery-biryani.png"
+type = "image"
+title = "Andhra Biryani"
+
+[[generated]]
+id = "hCu0F0ol0foiKUt43yk4X"
+uri = "file://artifacts/darbar-restaurant/public/images/gallery-chicken65.png"
+type = "image"
+title = "Chicken 65 Platter"
+
+[[generated]]
+id = "Z2aWui8yu8_sSt23yLu9g"
+uri = "file://artifacts/darbar-restaurant/public/images/gallery-interior.png"
+type = "image"
+title = "Restaurant Interior"
+
+[[generated]]
+id = "rRsDxPs-20x1i0tvx8Vgs"
+uri = "file://artifacts/darbar-restaurant/public/images/gallery-dessert.png"
+type = "image"
+title = "Brownie Ice Cream"

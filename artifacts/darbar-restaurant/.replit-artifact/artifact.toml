@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Darbar Multi-Cuisine Restaurant"
+version = "1.0.0"
+id = "artifacts/darbar-restaurant"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24045
+
+[services.development]
+run = "pnpm --filter @workspace/darbar-restaurant run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/darbar-restaurant", "run", "build" ]
+publicDir = "artifacts/darbar-restaurant/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24045"
+BASE_PATH = "/"

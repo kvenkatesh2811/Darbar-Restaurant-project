@@ -1,0 +1,599 @@
+Build a premium, mobile-responsive website for a restaurant called:
+
+🍽️ Darbar Multi-Cuisine Restaurant
+
+===================================================
+LOCATION
+===================================================
+
+40/304, Bhagya Nagar, River View Colony,
+Kurnool, Andhra Pradesh – 518004, India
+
+Google Rating:
+⭐ 4.7 / 5
+
+Tagline:
+"Authentic Rayalaseema Flavours & Multi-Cuisine Delights"
+
+Target Audience:
+
+• Families
+• Food Lovers
+• Office Employees
+• College Students
+• Tourists
+• Birthday Celebrations
+• Dine-In Customers
+• Takeaway Customers
+
+Opening Hours:
+
+Lunch:
+11:00 AM – 3:00 PM
+
+Dinner:
+7:00 PM – 10:30 PM
+
+===================================================
+TECH STACK
+===================================================
+
+Frontend:
+• Next.js (App Router)
+• TypeScript
+• Tailwind CSS
+• Framer Motion
+• Axios
+• React Hot Toast
+
+Backend:
+• Next.js API Routes
+
+Database:
+• Supabase PostgreSQL
+
+Authentication:
+• Clerk
+
+Payments:
+• Razorpay (Integration Ready)
+
+Emails:
+• Resend
+
+AI:
+• Gemini API
+
+Storage:
+• Supabase Storage
+
+Deployment:
+• Vercel
+
+Use clean architecture, reusable components, TypeScript and production-ready code.
+
+Folder Structure:
+
+darbar-restaurant/
+
+app/
+components/
+context/
+hooks/
+lib/
+services/
+types/
+actions/
+public/
+supabase/
+
+===================================================
+COLOR PALETTE
+===================================================
+
+Warm Orange:
+#F97316
+
+Golden Yellow:
+#FACC15
+
+White:
+#FFFFFF
+
+Dark Gray:
+#1F2937
+
+Design Style:
+
+• Premium Restaurant UI
+• Elegant Typography
+• Modern Cards
+• Smooth Animations
+• Hover Effects
+• Gradients
+• Mobile First
+• SEO Optimized
+• Fast Performance
+
+===================================================
+CUISINES
+===================================================
+
+• Andhra Cuisine
+• Rayalaseema Specialties
+• Biryani
+• Chinese
+• Veg & Non-Veg Multi-Cuisine
+
+===================================================
+MENU
+===================================================
+
+BIRYANI SPECIALS
+
+• Chicken Dum Biryani – ₹260
+• Mutton Biryani – ₹340
+• Fry Piece Biryani – ₹300
+• Apollo Fish Biryani – ₹320
+
+STARTERS
+
+• Chicken 65 – ₹220
+• Apollo Fish – ₹260
+• Chicken Lollipop – ₹240
+• Chilli Chicken – ₹230
+• Paneer 65 – ₹200
+
+VEG SPECIALS
+
+• Paneer Manchurian – ₹210
+• Mushroom Fry – ₹220
+• Veg Fried Rice – ₹180
+• Gobi 65 – ₹180
+
+CHINESE
+
+• Chicken Fried Rice – ₹210
+• Egg Fried Rice – ₹190
+• Chicken Noodles – ₹220
+
+DESSERTS & BEVERAGES
+
+• Fresh Lime Soda – ₹70
+• Oreo Shake – ₹120
+• Brownie with Ice Cream – ₹160
+
+===================================================
+SECTION 1 — HERO SECTION
+===================================================
+
+Display:
+
+• Restaurant Name
+• Tagline
+• Large Hero Food Image
+• Short Description:
+
+"Experience authentic Rayalaseema taste and delicious multi-cuisine dishes with exceptional hospitality."
+
+Buttons:
+
+• View Menu
+• Order on WhatsApp
+
+Add animated entrance effects using Framer Motion.
+
+===================================================
+SECTION 2 — ABOUT US
+===================================================
+
+Display:
+
+"Darbar Multi-Cuisine Restaurant is one of Kurnool's popular family dining destinations, serving quality Andhra, Rayalaseema and multi-cuisine dishes with excellent taste and hygiene."
+
+===================================================
+SECTION 3 — FULL MENU
+===================================================
+
+Create beautiful cards for each category.
+
+Features:
+
+• Search Menu
+• Category Filter
+• Veg / Non-Veg Badge
+• Price Display
+• Hover Effects
+• Responsive Grid
+
+===================================================
+SECTION 4 — TODAY'S SPECIAL
+===================================================
+
+Admin can update:
+
+• Dish Name
+• Description
+• Price
+• Image
+
+Store inside Supabase table:
+
+special_offers
+
+===================================================
+SECTION 5 — PHOTO GALLERY
+===================================================
+
+Create responsive gallery sections:
+
+• Biryani Photos
+• Starters
+• Desserts
+• Interior Ambience
+• Family Dining Area
+
+Use:
+
+• Lazy Loading
+• Image Optimization
+• Supabase Storage
+
+===================================================
+SECTION 6 — CUSTOMER REVIEWS
+===================================================
+
+Display:
+
+⭐⭐⭐⭐⭐ 4.7 / 5
+
+Sample Reviews:
+
+"Excellent biryani and family atmosphere."
+
+"Food quality and service are outstanding."
+
+"One of the best restaurants in Kurnool."
+
+Allow customers to submit reviews.
+
+Store in:
+
+reviews table
+
+===================================================
+SECTION 7 — OPENING HOURS
+===================================================
+
+Display elegant cards:
+
+Lunch:
+11:00 AM – 3:00 PM
+
+Dinner:
+7:00 PM – 10:30 PM
+
+===================================================
+SECTION 8 — GOOGLE MAPS
+===================================================
+
+Embed:
+
+Darbar Multi-Cuisine Restaurant,
+40/304 Bhagya Nagar,
+River View Colony,
+Kurnool,
+Andhra Pradesh – 518004
+
+===================================================
+SECTION 9 — CONTACT SECTION
+===================================================
+
+Display:
+
+• Address
+• Phone Number
+• WhatsApp Button
+• Opening Hours
+
+===================================================
+SECTION 10 — FOOTER
+===================================================
+
+Include:
+
+• Restaurant Name
+• Address
+• Copyright
+• Social Links
+• Quick Navigation Links
+
+===================================================
+FEATURE 1 — FLOATING WHATSAPP BUTTON
+===================================================
+
+Display floating button at bottom-right.
+
+Pre-filled Message:
+
+"Hello Darbar Multi-Cuisine Restaurant, I would like to place an order."
+
+===================================================
+FEATURE 2 — LEAD COLLECTION POPUP
+===================================================
+
+Show popup after 10 seconds:
+
+"Get Festival Offers & Birthday Discounts!"
+
+Collect:
+
+• Name
+• Email
+• Phone Number
+• Date of Birth
+
+Store inside:
+
+Supabase table → leads
+
+===================================================
+FEATURE 3 — LOYALTY PROGRAM
+===================================================
+
+Display:
+
+"Buy 9 Meals and Get the 10th Meal FREE"
+
+Birthday Benefit:
+
+• 10% Birthday Discount
+
+Track:
+
+• Loyalty Points
+• Reward Status
+• Visit Count
+
+Store inside:
+
+loyalty_rewards
+
+===================================================
+FEATURE 4 — FESTIVAL OFFER SYSTEM
+===================================================
+
+Use Gemini API.
+
+Generate WhatsApp messages for:
+
+• Diwali
+• Sankranti
+• Ugadi
+
+Use customer leads from Supabase.
+
+===================================================
+FEATURE 5 — QR MENU SYSTEM
+===================================================
+
+Generate QR code for:
+
+/menu
+
+Buttons:
+
+• Download QR
+• Print QR
+
+===================================================
+FEATURE 6 — ONLINE PRE-ORDER FOR PICKUP
+===================================================
+
+Allow customers to:
+
+• Select Menu Items
+• Choose Quantity
+• Enter Phone Number
+• Select Pickup Time
+• Add Notes
+• Submit Order
+
+Store in:
+
+orders table
+
+===================================================
+FEATURE 7 — CUSTOMER FEEDBACK
+===================================================
+
+Fields:
+
+• Name
+• Phone Number
+• Rating
+• Feedback
+
+Store in:
+
+feedback table
+
+===================================================
+CUSTOMER ACCOUNT FEATURES
+===================================================
+
+Use Clerk Authentication.
+
+Features:
+
+• Register
+• Login
+• Forgot Password
+• Profile Page
+• Order History
+• Birthday Information
+• Loyalty Points
+• Reward Status
+
+Protected Routes required.
+
+===================================================
+PAYMENT METHODS
+===================================================
+
+Support:
+
+• Cash on Pickup
+• UPI
+• Google Pay
+• PhonePe
+• Paytm
+
+Keep Razorpay integration ready.
+
+===================================================
+EMAIL FEATURES
+===================================================
+
+Use Resend.
+
+Templates:
+
+• Welcome Email
+• Order Confirmation
+• Password Reset
+• Birthday Wishes
+• Festival Offers
+
+===================================================
+ADMIN PANEL
+===================================================
+
+Protect using Clerk Admin Role.
+
+Dashboard Cards:
+
+• Total Customers
+• Total Orders
+• Revenue Statistics
+• Upcoming Birthdays
+• Total Leads
+
+Admin can:
+
+1. Add Menu Items
+2. Edit Menu Items
+3. Delete Menu Items
+4. Manage Categories
+5. Update Today's Special
+6. Manage Orders
+7. Update Order Status
+8. View Payments
+9. Manage Customers
+10. View Feedback
+11. View Leads
+12. Manage Loyalty Rewards
+13. Generate Festival Messages
+14. Export CSV Reports
+
+===================================================
+SUPABASE TABLES
+===================================================
+
+users
+admins
+menu_items
+categories
+orders
+payments
+reviews
+feedback
+leads
+loyalty_rewards
+birthdays
+special_offers
+
+Implement Row Level Security.
+
+===================================================
+API ROUTES
+===================================================
+
+Implement:
+
+GET
+POST
+PUT
+PATCH
+DELETE
+
+Follow:
+
+• Service Layer Pattern
+• Clean Architecture
+• Reusable Functions
+
+===================================================
+EXTRA FEATURES
+===================================================
+
+• Loading Skeletons
+• Scroll To Top Button
+• Smooth Scrolling
+• Dark Mode
+• Toast Notifications
+• Pagination
+• Search
+• Filters
+• Breadcrumbs
+• Responsive Navbar
+• Sticky Header
+• SEO Meta Tags
+• Open Graph Tags
+• Favicon
+• Image Optimization
+• Lazy Loading
+• Error Boundaries
+• Empty States
+
+===================================================
+PACKAGES
+===================================================
+
+npm install @supabase/supabase-js
+npm install @clerk/nextjs
+npm install axios
+npm install framer-motion
+npm install react-hot-toast
+npm install razorpay
+npm install resend
+npm install @google/genai
+npm install qrcode
+npm install date-fns
+
+===================================================
+DEPLOYMENT
+===================================================
+
+Frontend + API:
+Vercel
+
+Database:
+Supabase PostgreSQL
+
+Authentication:
+Clerk
+
+Storage:
+Supabase Storage
+
+Emails:
+Resend
+
+Payments:
+Razorpay
+
+AI:
+Gemini API
+
+Generate complete production-ready code with reusable components, TypeScript, clean folder structure and premium UI similar to modern high-end food brands.

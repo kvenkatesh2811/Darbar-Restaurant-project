@@ -3,20 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Darbar Multi-Cuisine Restaurant API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: menu
+    description: Menu items and categories
+  - name: reviews
+    description: Customer reviews
+  - name: orders
+    description: Pre-orders for pickup
+  - name: leads
+    description: Lead collection
+  - name: feedback
+    description: Customer feedback
+  - name: specials
+    description: Today's special offers
+  - name: stats
+    description: Restaurant stats and summaries
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +38,365 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /menu/items:
+    get:
+      operationId: listMenuItems
+      tags: [menu]
+      summary: List all menu items
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: isVeg
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MenuItem"
+    post:
+      operationId: createMenuItem
+      tags: [menu]
+      summary: Create a menu item (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuItem"
+
+  /menu/items/{id}:
+    patch:
+      operationId: updateMenuItem
+      tags: [menu]
+      summary: Update a menu item (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuItemUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuItem"
+    delete:
+      operationId: deleteMenuItem
+      tags: [menu]
+      summary: Delete a menu item (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /menu/categories:
+    get:
+      operationId: listCategories
+      tags: [menu]
+      summary: List all menu categories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /specials:
+    get:
+      operationId: listSpecials
+      tags: [specials]
+      summary: Get today's special offers
+      responses:
+        "200":
+          description: Today's specials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Special"
+    post:
+      operationId: createSpecial
+      tags: [specials]
+      summary: Create a special offer (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecialInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Special"
+
+  /specials/{id}:
+    patch:
+      operationId: updateSpecial
+      tags: [specials]
+      summary: Update a special offer (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecialUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Special"
+
+  /reviews:
+    get:
+      operationId: listReviews
+      tags: [reviews]
+      summary: List approved customer reviews
+      responses:
+        "200":
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Submit a customer review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  /feedback:
+    get:
+      operationId: listFeedback
+      tags: [feedback]
+      summary: List all feedback (admin)
+      responses:
+        "200":
+          description: List of feedback
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Feedback"
+    post:
+      operationId: submitFeedback
+      tags: [feedback]
+      summary: Submit customer feedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Feedback"
+
+  /leads:
+    get:
+      operationId: listLeads
+      tags: [leads]
+      summary: List all leads (admin)
+      responses:
+        "200":
+          description: List of leads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lead"
+    post:
+      operationId: createLead
+      tags: [leads]
+      summary: Capture a lead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeadInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List all orders (admin)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place a pre-order for pickup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get an order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Update order status (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /stats/summary:
+    get:
+      operationId: getStatsSummary
+      tags: [stats]
+      summary: Get restaurant stats summary for admin dashboard
+      responses:
+        "200":
+          description: Stats summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsSummary"
+
+  /stats/popular-items:
+    get:
+      operationId: getPopularItems
+      tags: [stats]
+      summary: Get the most ordered menu items
+      responses:
+        "200":
+          description: Popular items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PopularItem"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +407,400 @@ components:
       required:
         - status
 
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        displayOrder:
+          type: integer
+      required:
+        - id
+        - name
+        - slug
+        - displayOrder
+
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        categorySlug:
+          type: string
+        categoryName:
+          type: string
+        isVeg:
+          type: boolean
+        isAvailable:
+          type: boolean
+        imageUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - price
+        - categorySlug
+        - categoryName
+        - isVeg
+        - isAvailable
+        - createdAt
+
+    MenuItemInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        price:
+          type: number
+          minimum: 0
+        categorySlug:
+          type: string
+        isVeg:
+          type: boolean
+        isAvailable:
+          type: boolean
+        imageUrl:
+          type: string
+      required:
+        - name
+        - price
+        - categorySlug
+        - isVeg
+
+    MenuItemUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        price:
+          type: number
+          minimum: 0
+        categorySlug:
+          type: string
+        isVeg:
+          type: boolean
+        isAvailable:
+          type: boolean
+        imageUrl:
+          type: string
+
+    Special:
+      type: object
+      properties:
+        id:
+          type: integer
+        dishName:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        imageUrl:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - dishName
+        - price
+        - isActive
+        - createdAt
+
+    SpecialInput:
+      type: object
+      properties:
+        dishName:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        price:
+          type: number
+          minimum: 0
+        imageUrl:
+          type: string
+        isActive:
+          type: boolean
+      required:
+        - dishName
+        - price
+
+    SpecialUpdate:
+      type: object
+      properties:
+        dishName:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        price:
+          type: number
+          minimum: 0
+        imageUrl:
+          type: string
+        isActive:
+          type: boolean
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+        isApproved:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - customerName
+        - rating
+        - comment
+        - isApproved
+        - createdAt
+
+    ReviewInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+          minLength: 1
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          minLength: 1
+      required:
+        - customerName
+        - rating
+        - comment
+
+    Feedback:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: ["string", "null"]
+        rating:
+          type: integer
+        comment:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - rating
+        - comment
+        - createdAt
+
+    FeedbackInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          minLength: 1
+      required:
+        - name
+        - rating
+        - comment
+
+    Lead:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        dateOfBirth:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+
+    LeadInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+        dateOfBirth:
+          type: string
+      required:
+        - name
+        - email
+
+    OrderItem:
+      type: object
+      properties:
+        menuItemId:
+          type: integer
+        menuItemName:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+      required:
+        - menuItemId
+        - menuItemName
+        - quantity
+        - price
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        phone:
+          type: string
+        pickupTime:
+          type: string
+        notes:
+          type: ["string", "null"]
+        status:
+          type: string
+        totalAmount:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        createdAt:
+          type: string
+      required:
+        - id
+        - customerName
+        - phone
+        - pickupTime
+        - status
+        - totalAmount
+        - items
+        - createdAt
+
+    OrderInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        pickupTime:
+          type: string
+          minLength: 1
+        notes:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+      required:
+        - customerName
+        - phone
+        - pickupTime
+        - items
+
+    OrderStatusUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, preparing, ready, completed, cancelled]
+      required:
+        - status
+
+    StatsSummary:
+      type: object
+      properties:
+        totalOrders:
+          type: integer
+        totalLeads:
+          type: integer
+        totalReviews:
+          type: integer
+        pendingOrders:
+          type: integer
+        averageRating:
+          type: number
+        todayOrders:
+          type: integer
+      required:
+        - totalOrders
+        - totalLeads
+        - totalReviews
+        - pendingOrders
+        - averageRating
+        - todayOrders
+
+    PopularItem:
+      type: object
+      properties:
+        menuItemId:
+          type: integer
+        name:
+          type: string
+        orderCount:
+          type: integer
+        categoryName:
+          type: string
+      required:
+        - menuItemId
+        - name
+        - orderCount
+        - categoryName
