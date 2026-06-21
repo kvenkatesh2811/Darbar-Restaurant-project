@@ -209,6 +209,41 @@ export const CreateReviewBody = zod.object({
 
 
 /**
+ * @summary List all reviews including unapproved (admin only)
+ */
+export const ListAllReviewsResponseItem = zod.object({
+  "id": zod.number(),
+  "customerName": zod.string(),
+  "rating": zod.number(),
+  "comment": zod.string(),
+  "isApproved": zod.boolean(),
+  "createdAt": zod.string()
+})
+export const ListAllReviewsResponse = zod.array(ListAllReviewsResponseItem)
+
+
+/**
+ * @summary Approve or reject a review
+ */
+export const UpdateReviewApprovalParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateReviewApprovalBody = zod.object({
+  "isApproved": zod.boolean()
+})
+
+export const UpdateReviewApprovalResponse = zod.object({
+  "id": zod.number(),
+  "customerName": zod.string(),
+  "rating": zod.number(),
+  "comment": zod.string(),
+  "isApproved": zod.boolean(),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary List all feedback (admin)
  */
 export const ListFeedbackResponseItem = zod.object({

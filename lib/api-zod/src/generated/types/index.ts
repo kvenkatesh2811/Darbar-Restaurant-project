@@ -25,6 +25,7 @@ export * from './orderStatusUpdate';
 export * from './orderStatusUpdateStatus';
 export * from './popularItem';
 export * from './review';
+export * from './reviewApprovalUpdate';
 export * from './reviewInput';
 export * from './special';
 export * from './specialInput';

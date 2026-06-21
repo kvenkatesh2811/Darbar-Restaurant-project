@@ -96,6 +96,10 @@ export interface Review {
   createdAt: string;
 }
 
+export interface ReviewApprovalUpdate {
+  isApproved: boolean;
+}
+
 export interface ReviewInput {
   /** @minLength 1 */
   customerName: string;

@@ -52,6 +52,9 @@ import {
   OrderStatusUpdateStatus,
   useGetDailyRevenue,
   useGetPopularItems,
+  useListAllReviews,
+  useUpdateReviewApproval,
+  getListAllReviewsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -252,6 +255,8 @@ export default function Admin() {
   const { data: feedbackList } = useListFeedback();
   const { data: dailyRevenue } = useGetDailyRevenue();
   const { data: popularItems } = useGetPopularItems();
+  const { data: allReviews } = useListAllReviews();
+  const updateReviewApproval = useUpdateReviewApproval();
 
   const updateOrderStatus = useUpdateOrderStatus();
   const deleteMenuItem = useDeleteMenuItem();
@@ -710,13 +715,29 @@ export default function Admin() {
         {/* REVIEWS */}
         {activeTab === "reviews" && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-            <h1 className="text-3xl font-bold font-serif mb-6">Reviews</h1>
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-3xl font-bold font-serif">Reviews</h1>
+              <div className="flex gap-2 text-sm text-muted-foreground">
+                <Badge variant="outline" className="text-green-600 border-green-200">
+                  {allReviews?.filter(r => r.isApproved).length ?? 0} approved
+                </Badge>
+                <Badge variant="outline" className="text-amber-600 border-amber-200">
+                  {allReviews?.filter(r => !r.isApproved).length ?? 0} pending
+                </Badge>
+              </div>
+            </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {reviews?.map(review => (
-                <Card key={review.id} className="relative">
+              {allReviews?.map(review => (
+                <Card
+                  key={review.id}
+                  className={`relative flex flex-col transition-opacity ${!review.isApproved ? "border-amber-200 bg-amber-50/40 dark:bg-amber-950/10" : ""}`}
+                >
                   <div className="absolute top-4 right-4">
-                    <Badge variant={review.isApproved ? "default" : "secondary"}>
-                      {review.isApproved ? "Approved" : "Pending"}
+                    <Badge
+                      variant={review.isApproved ? "default" : "secondary"}
+                      className={review.isApproved ? "bg-green-600 hover:bg-green-600" : "bg-amber-100 text-amber-800 border-amber-200"}
+                    >
+                      {review.isApproved ? "Live" : "Pending"}
                     </Badge>
                   </div>
                   <CardHeader className="pb-2 pr-24">
@@ -727,13 +748,51 @@ export default function Admin() {
                       ))}
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm italic">"{review.comment}"</p>
-                    <p className="text-xs text-muted-foreground mt-4">{new Date(review.createdAt).toLocaleDateString()}</p>
+                  <CardContent className="flex-1">
+                    <p className="text-sm italic text-muted-foreground">"{review.comment}"</p>
+                    <p className="text-xs text-muted-foreground mt-3">{new Date(review.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
                   </CardContent>
+                  <div className="px-6 pb-5 flex gap-2">
+                    {!review.isApproved ? (
+                      <Button
+                        size="sm"
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                        disabled={updateReviewApproval.isPending}
+                        onClick={() =>
+                          updateReviewApproval.mutate(
+                            { id: review.id, data: { isApproved: true } },
+                            {
+                              onSuccess: () => { toast({ title: "Review approved — now visible on homepage" }); queryClient.invalidateQueries({ queryKey: getListAllReviewsQueryKey() }); },
+                              onError: () => toast({ variant: "destructive", title: "Failed to approve review" }),
+                            }
+                          )
+                        }
+                      >
+                        Approve
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                        disabled={updateReviewApproval.isPending}
+                        onClick={() =>
+                          updateReviewApproval.mutate(
+                            { id: review.id, data: { isApproved: false } },
+                            {
+                              onSuccess: () => { toast({ title: "Review hidden from homepage" }); queryClient.invalidateQueries({ queryKey: getListAllReviewsQueryKey() }); },
+                              onError: () => toast({ variant: "destructive", title: "Failed to reject review" }),
+                            }
+                          )
+                        }
+                      >
+                        Hide
+                      </Button>
+                    )}
+                  </div>
                 </Card>
               ))}
-              {!reviews?.length && (
+              {!allReviews?.length && (
                 <div className="col-span-full text-center py-12 text-muted-foreground bg-card border border-border rounded-xl">
                   No reviews submitted yet.
                 </div>
