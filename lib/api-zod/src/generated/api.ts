@@ -148,6 +148,21 @@ export const CreateSpecialBody = zod.object({
 
 
 /**
+ * @summary List all specials including inactive (admin)
+ */
+export const ListAllSpecialsResponseItem = zod.object({
+  "id": zod.number(),
+  "dishName": zod.string(),
+  "description": zod.string().nullish(),
+  "price": zod.number(),
+  "imageUrl": zod.string().nullish(),
+  "isActive": zod.boolean(),
+  "createdAt": zod.string()
+})
+export const ListAllSpecialsResponse = zod.array(ListAllSpecialsResponseItem)
+
+
+/**
  * @summary Update a special offer (admin)
  */
 export const UpdateSpecialParams = zod.object({
@@ -175,6 +190,14 @@ export const UpdateSpecialResponse = zod.object({
   "imageUrl": zod.string().nullish(),
   "isActive": zod.boolean(),
   "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a special offer (admin)
+ */
+export const DeleteSpecialParams = zod.object({
+  "id": zod.coerce.number()
 })
 
 

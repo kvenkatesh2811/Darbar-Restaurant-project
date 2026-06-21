@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { 
   BarChart3, Users, MessageSquare, ShoppingCart, 
   LogOut, ChefHat, Star, Clock, Plus, Edit2, Trash2,
-  MessageCircle, AlertTriangle, TrendingUp
+  MessageCircle, AlertTriangle, TrendingUp, Sparkles, ToggleLeft, ToggleRight
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -55,10 +55,15 @@ import {
   useListAllReviews,
   useUpdateReviewApproval,
   getListAllReviewsQueryKey,
+  useListAllSpecials,
+  useCreateSpecial,
+  useUpdateSpecial,
+  useDeleteSpecial,
+  getListAllSpecialsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import type { MenuItem } from "@workspace/api-client-react";
+import type { MenuItem, Special } from "@workspace/api-client-react";
 
 const menuItemSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -241,6 +246,161 @@ function MenuItemDialog({
   );
 }
 
+const specialSchema = z.object({
+  dishName: z.string().min(1, "Dish name is required"),
+  description: z.string().optional(),
+  price: z.coerce.number().min(0, "Price must be ≥ 0"),
+  imageUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  isActive: z.boolean(),
+});
+
+type SpecialFormValues = z.infer<typeof specialSchema>;
+
+function SpecialDialog({
+  open,
+  onClose,
+  editSpecial,
+}: {
+  open: boolean;
+  onClose: () => void;
+  editSpecial: Special | null;
+}) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const createSpecial = useCreateSpecial();
+  const updateSpecial = useUpdateSpecial();
+
+  const form = useForm<SpecialFormValues>({
+    resolver: zodResolver(specialSchema),
+    defaultValues: { dishName: "", description: "", price: 0, imageUrl: "", isActive: true },
+  });
+
+  useEffect(() => {
+    if (editSpecial) {
+      form.reset({
+        dishName: editSpecial.dishName,
+        description: editSpecial.description || "",
+        price: Number(editSpecial.price),
+        imageUrl: editSpecial.imageUrl || "",
+        isActive: editSpecial.isActive,
+      });
+    } else {
+      form.reset({ dishName: "", description: "", price: 0, imageUrl: "", isActive: true });
+    }
+  }, [editSpecial, open]);
+
+  const onSubmit = (values: SpecialFormValues) => {
+    const payload = { ...values, imageUrl: values.imageUrl || undefined };
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: getListAllSpecialsQueryKey() });
+      onClose();
+    };
+
+    if (editSpecial) {
+      updateSpecial.mutate(
+        { id: editSpecial.id, data: payload },
+        {
+          onSuccess: () => { toast({ title: "Special updated" }); invalidate(); },
+          onError: () => toast({ variant: "destructive", title: "Failed to update special" }),
+        }
+      );
+    } else {
+      createSpecial.mutate(
+        { data: payload },
+        {
+          onSuccess: () => { toast({ title: "Special created" }); invalidate(); },
+          onError: () => toast({ variant: "destructive", title: "Failed to create special" }),
+        }
+      );
+    }
+  };
+
+  const isPending = createSpecial.isPending || updateSpecial.isPending;
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle className="font-serif text-2xl">{editSpecial ? "Edit Special" : "Add Today's Special"}</DialogTitle>
+          <DialogDescription>{editSpecial ? "Update this featured dish." : "Highlight a dish as today's special on the homepage."}</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="dishName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Dish Name</FormLabel>
+                  <FormControl><Input placeholder="e.g. Chef's Special Biryani" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price (₹)</FormLabel>
+                    <FormControl><Input type="number" placeholder="280" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col justify-end">
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-2 h-10">
+                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        <Label className={field.value ? "text-green-600" : "text-muted-foreground"}>
+                          {field.value ? "Active" : "Inactive"}
+                        </Label>
+                      </div>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description (Optional)</FormLabel>
+                  <FormControl><Textarea placeholder="Brief description..." className="resize-none" {...field} /></FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image URL (Optional)</FormLabel>
+                  <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Saving..." : editSpecial ? "Save Changes" : "Add Special"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const { toast } = useToast();
@@ -257,6 +417,8 @@ export default function Admin() {
   const { data: popularItems } = useGetPopularItems();
   const { data: allReviews } = useListAllReviews();
   const updateReviewApproval = useUpdateReviewApproval();
+  const { data: allSpecials } = useListAllSpecials();
+  const deleteSpecial = useDeleteSpecial();
 
   const updateOrderStatus = useUpdateOrderStatus();
   const deleteMenuItem = useDeleteMenuItem();
@@ -264,6 +426,10 @@ export default function Admin() {
   const [menuDialogOpen, setMenuDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+
+  const [specialDialogOpen, setSpecialDialogOpen] = useState(false);
+  const [editingSpecial, setEditingSpecial] = useState<Special | null>(null);
+  const [deleteSpecialId, setDeleteSpecialId] = useState<number | null>(null);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -307,10 +473,26 @@ export default function Admin() {
     return <Badge className={`${variants[status] || "bg-gray-100"} border-none hover:opacity-90`} variant="outline">{status.toUpperCase()}</Badge>;
   };
 
+  const handleDeleteSpecial = () => {
+    if (deleteSpecialId === null) return;
+    deleteSpecial.mutate(
+      { id: deleteSpecialId },
+      {
+        onSuccess: () => {
+          toast({ title: "Special deleted" });
+          queryClient.invalidateQueries({ queryKey: getListAllSpecialsQueryKey() });
+          setDeleteSpecialId(null);
+        },
+        onError: () => toast({ variant: "destructive", title: "Failed to delete special" }),
+      }
+    );
+  };
+
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3, badge: null },
     { id: "orders", label: "Orders", icon: ShoppingCart, badge: stats?.pendingOrders || null },
     { id: "menu", label: "Menu Management", icon: ChefHat, badge: null },
+    { id: "specials", label: "Today's Specials", icon: Sparkles, badge: null },
     { id: "leads", label: "Leads & Customers", icon: Users, badge: null },
     { id: "reviews", label: "Reviews", icon: MessageSquare, badge: null },
     { id: "feedback", label: "Feedback", icon: MessageCircle, badge: null },
@@ -674,6 +856,75 @@ export default function Admin() {
           </div>
         )}
 
+        {/* SPECIALS */}
+        {activeTab === "specials" && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h1 className="text-3xl font-bold font-serif">Today's Specials</h1>
+                <p className="text-sm text-muted-foreground mt-1">These appear in the Featured Specials section on the homepage.</p>
+              </div>
+              <Button onClick={() => { setEditingSpecial(null); setSpecialDialogOpen(true); }}>
+                <Plus className="mr-2 h-4 w-4" /> Add Special
+              </Button>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allSpecials?.map(special => (
+                <Card key={special.id} className={`flex flex-col overflow-hidden border-2 transition-colors ${special.isActive ? "border-primary/20" : "border-border opacity-60"}`}>
+                  {special.imageUrl && (
+                    <div className="h-36 overflow-hidden bg-muted">
+                      <img src={special.imageUrl} alt={special.dishName} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-base leading-tight">{special.dishName}</CardTitle>
+                      {special.isActive
+                        ? <Badge className="bg-green-600 hover:bg-green-600 shrink-0">Active</Badge>
+                        : <Badge variant="secondary" className="shrink-0">Inactive</Badge>
+                      }
+                    </div>
+                    <p className="text-xl font-bold text-primary font-serif">₹{Number(special.price).toFixed(0)}</p>
+                  </CardHeader>
+                  {special.description && (
+                    <CardContent className="flex-1 pt-0">
+                      <p className="text-sm text-muted-foreground line-clamp-2">{special.description}</p>
+                    </CardContent>
+                  )}
+                  <div className="px-6 pb-5 flex gap-2 mt-auto">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => { setEditingSpecial(special); setSpecialDialogOpen(true); }}
+                    >
+                      <Edit2 className="h-3.5 w-3.5 mr-1.5" /> Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive border-destructive/30 hover:bg-destructive/10"
+                      onClick={() => setDeleteSpecialId(special.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+              {!allSpecials?.length && (
+                <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground bg-card border border-border border-dashed rounded-xl gap-3">
+                  <Sparkles className="h-10 w-10 opacity-30" />
+                  <p className="font-medium">No specials yet</p>
+                  <p className="text-sm">Add a dish to feature it on the homepage.</p>
+                  <Button variant="outline" size="sm" onClick={() => { setEditingSpecial(null); setSpecialDialogOpen(true); }}>
+                    <Plus className="mr-2 h-4 w-4" /> Add Your First Special
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* LEADS */}
         {activeTab === "leads" && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
@@ -843,7 +1094,7 @@ export default function Admin() {
         categories={categories || []}
       />
 
-      {/* Delete Confirmation */}
+      {/* Delete Menu Item Confirmation */}
       <AlertDialog open={deleteItemId !== null} onOpenChange={(v) => !v && setDeleteItemId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -860,6 +1111,37 @@ export default function Admin() {
             <AlertDialogAction
               className="bg-destructive hover:bg-destructive/90"
               onClick={handleDeleteItem}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Special Add/Edit Dialog */}
+      <SpecialDialog
+        open={specialDialogOpen}
+        onClose={() => setSpecialDialogOpen(false)}
+        editSpecial={editingSpecial}
+      />
+
+      {/* Delete Special Confirmation */}
+      <AlertDialog open={deleteSpecialId !== null} onOpenChange={(v) => !v && setDeleteSpecialId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              Delete Special
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove this special from the homepage. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={handleDeleteSpecial}
             >
               Delete
             </AlertDialogAction>

@@ -169,6 +169,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/Special"
 
+  /admin/specials:
+    get:
+      operationId: listAllSpecials
+      tags: [specials]
+      summary: List all specials including inactive (admin)
+      responses:
+        "200":
+          description: All specials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Special"
+
   /specials/{id}:
     patch:
       operationId: updateSpecial
@@ -193,6 +208,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Special"
+    delete:
+      operationId: deleteSpecial
+      tags: [specials]
+      summary: Delete a special offer (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
 
   /reviews:
     get:

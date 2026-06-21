@@ -88,4 +88,39 @@ router.patch("/specials/:id", async (req, res): Promise<void> => {
   });
 });
 
+router.get("/admin/specials", async (_req, res): Promise<void> => {
+  const specials = await db
+    .select()
+    .from(specialsTable)
+    .orderBy(specialsTable.createdAt);
+
+  res.json(
+    specials.map((s) => ({
+      ...s,
+      price: parseFloat(s.price),
+      createdAt: s.createdAt.toISOString(),
+    })),
+  );
+});
+
+router.delete("/specials/:id", async (req, res): Promise<void> => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  const [deleted] = await db
+    .delete(specialsTable)
+    .where(eq(specialsTable.id, id))
+    .returning();
+
+  if (!deleted) {
+    res.status(404).json({ error: "Special not found" });
+    return;
+  }
+
+  res.status(204).end();
+});
+
 export default router;
