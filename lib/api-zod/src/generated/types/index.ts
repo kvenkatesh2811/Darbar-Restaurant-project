@@ -7,6 +7,7 @@
  */
 
 export * from './category';
+export * from './dailyRevenue';
 export * from './feedback';
 export * from './feedbackInput';
 export * from './healthStatus';

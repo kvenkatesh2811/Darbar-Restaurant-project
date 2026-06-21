@@ -214,6 +214,12 @@ export interface PopularItem {
   categoryName: string;
 }
 
+export interface DailyRevenue {
+  date: string;
+  revenue: number;
+  orders: number;
+}
+
 export type ListMenuItemsParams = {
 category?: string;
 search?: string;

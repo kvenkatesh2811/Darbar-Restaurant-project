@@ -3,8 +3,12 @@ import { Link } from "wouter";
 import { 
   BarChart3, Users, MessageSquare, ShoppingCart, 
   LogOut, ChefHat, Star, Clock, Plus, Edit2, Trash2,
-  MessageCircle, AlertTriangle
+  MessageCircle, AlertTriangle, TrendingUp
 } from "lucide-react";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, Area, AreaChart,
+} from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -46,6 +50,8 @@ import {
   getListMenuItemsQueryKey,
   useListFeedback,
   OrderStatusUpdateStatus,
+  useGetDailyRevenue,
+  useGetPopularItems,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -244,6 +250,8 @@ export default function Admin() {
   const { data: menuItems } = useListMenuItems();
   const { data: categories } = useListCategories();
   const { data: feedbackList } = useListFeedback();
+  const { data: dailyRevenue } = useGetDailyRevenue();
+  const { data: popularItems } = useGetPopularItems();
 
   const updateOrderStatus = useUpdateOrderStatus();
   const deleteMenuItem = useDeleteMenuItem();
@@ -358,6 +366,8 @@ export default function Admin() {
         {activeTab === "dashboard" && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
             <h1 className="text-3xl font-bold font-serif mb-6">Dashboard Overview</h1>
+
+            {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -401,6 +411,97 @@ export default function Admin() {
               </Card>
             </div>
 
+            {/* Charts row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Revenue trend */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <div>
+                    <CardTitle className="text-base font-semibold">Revenue — Last 7 Days</CardTitle>
+                    <CardDescription className="text-xs mt-1">Daily pickup order revenue (₹)</CardDescription>
+                  </div>
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <AreaChart data={dailyRevenue || []} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#F97316" stopOpacity={0.25} />
+                          <stop offset="95%" stopColor="#F97316" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v: string) => {
+                          const d = new Date(v + "T00:00:00");
+                          return d.toLocaleDateString("en-IN", { weekday: "short" });
+                        }}
+                      />
+                      <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => `₹${v}`} />
+                      <Tooltip
+                        formatter={(value: number) => [`₹${value.toFixed(0)}`, "Revenue"]}
+                        labelFormatter={(label: string) => {
+                          const d = new Date(label + "T00:00:00");
+                          return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="#F97316"
+                        strokeWidth={2}
+                        fill="url(#revenueGrad)"
+                        dot={{ r: 3, fill: "#F97316" }}
+                        activeDot={{ r: 5 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Popular items */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <div>
+                    <CardTitle className="text-base font-semibold">Popular Items</CardTitle>
+                    <CardDescription className="text-xs mt-1">Most ordered dishes (by quantity)</CardDescription>
+                  </div>
+                  <ChefHat className="h-5 w-5 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  {(!popularItems || popularItems.length === 0) ? (
+                    <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">
+                      No orders yet — data will appear here once customers start ordering.
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height={220}>
+                      <BarChart
+                        data={popularItems.slice(0, 7)}
+                        layout="vertical"
+                        margin={{ top: 4, right: 16, left: 8, bottom: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} className="stroke-border" />
+                        <XAxis type="number" tick={{ fontSize: 11 }} />
+                        <YAxis
+                          type="category"
+                          dataKey="name"
+                          width={110}
+                          tick={{ fontSize: 11 }}
+                          tickFormatter={(v: string) => v.length > 14 ? v.slice(0, 13) + "…" : v}
+                        />
+                        <Tooltip formatter={(value: number) => [value, "Orders"]} />
+                        <Bar dataKey="orderCount" fill="#FACC15" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Orders */}
             <Card>
               <CardHeader>
                 <CardTitle>Recent Orders</CardTitle>

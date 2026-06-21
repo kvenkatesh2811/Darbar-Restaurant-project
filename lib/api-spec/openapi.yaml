@@ -397,6 +397,21 @@ paths:
                 items:
                   $ref: "#/components/schemas/PopularItem"
 
+  /stats/daily-revenue:
+    get:
+      operationId: getDailyRevenue
+      tags: [stats]
+      summary: Get daily revenue and order counts for the past 7 days
+      responses:
+        "200":
+          description: Daily revenue data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DailyRevenue"
+
 components:
   schemas:
     HealthStatus:
@@ -804,3 +819,17 @@ components:
         - name
         - orderCount
         - categoryName
+
+    DailyRevenue:
+      type: object
+      properties:
+        date:
+          type: string
+        revenue:
+          type: number
+        orders:
+          type: integer
+      required:
+        - date
+        - revenue
+        - orders

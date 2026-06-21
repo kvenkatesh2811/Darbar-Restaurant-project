@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, count, avg, sql } from "drizzle-orm";
+import { eq, count, avg, sum, sql } from "drizzle-orm";
 import { db, ordersTable, reviewsTable, leadsTable } from "@workspace/db";
 
 const router: IRouter = Router();
@@ -74,6 +74,35 @@ router.get("/stats/popular-items", async (_req, res): Promise<void> => {
     }))
     .sort((a, b) => b.orderCount - a.orderCount)
     .slice(0, 10);
+
+  res.json(result);
+});
+
+router.get("/stats/daily-revenue", async (_req, res): Promise<void> => {
+  const rows = await db
+    .select({
+      date: sql<string>`DATE(${ordersTable.createdAt})::text`,
+      revenue: sum(ordersTable.totalAmount),
+      orders: count(),
+    })
+    .from(ordersTable)
+    .where(sql`${ordersTable.createdAt} >= CURRENT_DATE - INTERVAL '6 days'`)
+    .groupBy(sql`DATE(${ordersTable.createdAt})`)
+    .orderBy(sql`DATE(${ordersTable.createdAt})`);
+
+  // Fill in missing days with 0 so the chart always shows 7 bars
+  const result: { date: string; revenue: number; orders: number }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const found = rows.find(r => r.date === dateStr);
+    result.push({
+      date: dateStr,
+      revenue: found ? parseFloat(String(found.revenue ?? "0")) : 0,
+      orders: found ? Number(found.orders) : 0,
+    });
+  }
 
   res.json(result);
 });

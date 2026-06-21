@@ -21,6 +21,7 @@ import type {
 
 import type {
   Category,
+  DailyRevenue,
   Feedback,
   FeedbackInput,
   HealthStatus,
@@ -1616,6 +1617,83 @@ export function useGetPopularItems<TData = Awaited<ReturnType<typeof getPopularI
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetPopularItemsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetDailyRevenueUrl = () => {
+
+
+
+
+  return `/api/stats/daily-revenue`
+}
+
+/**
+ * @summary Get daily revenue and order counts for the past 7 days
+ */
+export const getDailyRevenue = async ( options?: RequestInit): Promise<DailyRevenue[]> => {
+
+  return customFetch<DailyRevenue[]>(getGetDailyRevenueUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDailyRevenueQueryKey = () => {
+    return [
+    `/api/stats/daily-revenue`
+    ] as const;
+    }
+
+
+export const getGetDailyRevenueQueryOptions = <TData = Awaited<ReturnType<typeof getDailyRevenue>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDailyRevenue>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDailyRevenueQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDailyRevenue>>> = ({ signal }) => getDailyRevenue({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDailyRevenue>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDailyRevenueQueryResult = NonNullable<Awaited<ReturnType<typeof getDailyRevenue>>>
+export type GetDailyRevenueQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get daily revenue and order counts for the past 7 days
+ */
+
+export function useGetDailyRevenue<TData = Awaited<ReturnType<typeof getDailyRevenue>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDailyRevenue>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDailyRevenueQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

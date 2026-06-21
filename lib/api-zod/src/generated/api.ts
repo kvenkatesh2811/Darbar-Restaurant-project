@@ -395,3 +395,14 @@ export const GetPopularItemsResponseItem = zod.object({
 export const GetPopularItemsResponse = zod.array(GetPopularItemsResponseItem)
 
 
+/**
+ * @summary Get daily revenue and order counts for the past 7 days
+ */
+export const GetDailyRevenueResponseItem = zod.object({
+  "date": zod.string(),
+  "revenue": zod.number(),
+  "orders": zod.number()
+})
+export const GetDailyRevenueResponse = zod.array(GetDailyRevenueResponseItem)
+
+
