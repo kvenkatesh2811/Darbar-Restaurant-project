@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, Phone, ChevronRight, Send } from "lucide-react";
+import { Star, MapPin, Clock, Phone, ChevronRight, Send, X, ChevronLeft, ChevronRight as ChevronRightIcon, ZoomIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +24,34 @@ export default function Home() {
 
   const [feedbackForm, setFeedbackForm] = useState({ name: "", phone: "", comment: "", rating: 5 });
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const GALLERY_PHOTOS = [
+    { src: "/images/gallery-interior-dining.jpg", alt: "Dining Hall", label: "Elegant Dining Area" },
+    { src: "/images/gallery-lobby.jpg", alt: "Grand Lobby", label: "Grand Lobby" },
+    { src: "/images/gallery-entrance.jpg", alt: "Darbar Neon Sign", label: "Our Entrance" },
+    { src: "/images/gallery-curry-closeup.jpg", alt: "Chicken Masala", label: "Signature Chicken Masala" },
+    { src: "/images/gallery-chicken65.jpg", alt: "Chicken 65 Starter", label: "Crispy Chicken 65" },
+    { src: "/images/gallery-biryani-bowl.jpg", alt: "Darbar Biryani", label: "Aromatic Biryani" },
+    { src: "/images/gallery-curry-karahi.jpg", alt: "Chicken Curry Karahi", label: "Chicken Karahi" },
+    { src: "/images/gallery-chicken-fry.jpg", alt: "Chicken Fry", label: "Spicy Chicken Fry" },
+  ];
+
+  const openLightbox = useCallback((i: number) => setLightboxIndex(i), []);
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const prevPhoto = useCallback(() => setLightboxIndex(i => i !== null ? (i - 1 + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length : null), []);
+  const nextPhoto = useCallback(() => setLightboxIndex(i => i !== null ? (i + 1) % GALLERY_PHOTOS.length : null), []);
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") prevPhoto();
+      if (e.key === "ArrowRight") nextPhoto();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIndex, closeLightbox, prevPhoto, nextPhoto]);
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -229,24 +257,117 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-primary font-medium tracking-widest uppercase mb-2">Atmosphere & Food</h2>
             <h3 className="font-serif text-4xl md:text-5xl font-bold">Gallery</h3>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto">Step inside Darbar — from our grand lobby to the dishes that keep guests coming back.</p>
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="rounded-xl overflow-hidden aspect-[4/3] group">
-              <img src="/images/gallery-biryani.png" loading="lazy" alt="Andhra Biryani" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+
+          {/* Masonry-style grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {/* Row 1: wide interior + 2 stacked */}
+            <div
+              className="md:col-span-2 rounded-2xl overflow-hidden aspect-[16/10] group cursor-pointer relative"
+              onClick={() => openLightbox(0)}
+            >
+              <img src={GALLERY_PHOTOS[0].src} loading="lazy" alt={GALLERY_PHOTOS[0].alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-300 flex items-center justify-center">
+                <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-8 h-8 drop-shadow-lg" />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <p className="text-white font-medium text-sm">{GALLERY_PHOTOS[0].label}</p>
+              </div>
             </div>
-            <div className="rounded-xl overflow-hidden aspect-[4/3] group">
-              <img src="/images/gallery-chicken65.png" loading="lazy" alt="Chicken 65 Starter Platter" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-            </div>
-            <div className="rounded-xl overflow-hidden aspect-[4/3] group">
-              <img src="/images/gallery-interior.png" loading="lazy" alt="Restaurant Interior" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-            </div>
-            <div className="rounded-xl overflow-hidden aspect-[4/3] group">
-              <img src="/images/gallery-dessert.png" loading="lazy" alt="Dessert Brownie Ice Cream" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                className="rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer relative"
+                onClick={() => openLightbox(i)}
+              >
+                <img src={GALLERY_PHOTOS[i].src} loading="lazy" alt={GALLERY_PHOTOS[i].alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-300 flex items-center justify-center">
+                  <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-6 h-6 drop-shadow-lg" />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <p className="text-white font-medium text-xs">{GALLERY_PHOTOS[i].label}</p>
+                </div>
+              </div>
+            ))}
+
+            {/* Row 2: 4 even columns */}
+            {[3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="rounded-2xl overflow-hidden aspect-[4/3] group cursor-pointer relative"
+                onClick={() => openLightbox(i)}
+              >
+                <img src={GALLERY_PHOTOS[i].src} loading="lazy" alt={GALLERY_PHOTOS[i].alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-300 flex items-center justify-center">
+                  <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-6 h-6 drop-shadow-lg" />
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <p className="text-white font-medium text-xs">{GALLERY_PHOTOS[i].label}</p>
+                </div>
+              </div>
+            ))}
+
+            {/* Last photo — 3/4 wide */}
+            <div
+              className="md:col-span-2 col-span-2 rounded-2xl overflow-hidden aspect-[16/9] group cursor-pointer relative"
+              onClick={() => openLightbox(7)}
+            >
+              <img src={GALLERY_PHOTOS[7].src} loading="lazy" alt={GALLERY_PHOTOS[7].alt} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-300 flex items-center justify-center">
+                <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-8 h-8 drop-shadow-lg" />
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <p className="text-white font-medium text-sm">{GALLERY_PHOTOS[7].label}</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* LIGHTBOX */}
+      {lightboxIndex !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <button
+            className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors z-10 bg-white/10 hover:bg-white/20 rounded-full p-2"
+            onClick={closeLightbox}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors z-10 bg-white/10 hover:bg-white/20 rounded-full p-2"
+            onClick={(e) => { e.stopPropagation(); prevPhoto(); }}
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors z-10 bg-white/10 hover:bg-white/20 rounded-full p-2"
+            onClick={(e) => { e.stopPropagation(); nextPhoto(); }}
+          >
+            <ChevronRightIcon className="w-6 h-6" />
+          </button>
+          <div className="max-w-4xl max-h-[85vh] flex flex-col items-center gap-4 px-16" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={GALLERY_PHOTOS[lightboxIndex].src}
+              alt={GALLERY_PHOTOS[lightboxIndex].alt}
+              className="max-h-[75vh] max-w-full object-contain rounded-xl shadow-2xl"
+            />
+            <p className="text-white/90 font-medium text-lg">{GALLERY_PHOTOS[lightboxIndex].label}</p>
+            <div className="flex gap-1.5">
+              {GALLERY_PHOTOS.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setLightboxIndex(i)}
+                  className={`w-2 h-2 rounded-full transition-colors ${i === lightboxIndex ? "bg-white" : "bg-white/40 hover:bg-white/70"}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* REVIEWS SECTION */}
       <section className="py-24 bg-muted/30 border-y border-border">
