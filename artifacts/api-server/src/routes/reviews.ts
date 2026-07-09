@@ -33,7 +33,7 @@ router.post("/reviews", async (req, res): Promise<void> => {
       customerName: parsed.data.customerName,
       rating: parsed.data.rating,
       comment: parsed.data.comment,
-      isApproved: true,
+      isApproved: false,
     })
     .returning();
 

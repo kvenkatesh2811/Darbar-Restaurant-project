@@ -40,10 +40,12 @@ router.post("/orders", async (req, res): Promise<void> => {
     return;
   }
 
-  const totalAmount = parsed.data.items.reduce(
+  const GST_RATE = 0.05;
+  const subtotal = parsed.data.items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
+  const totalAmount = subtotal * (1 + GST_RATE);
 
   const [order] = await db
     .insert(ordersTable)
