@@ -478,13 +478,18 @@ export default function Admin() {
   const [authenticated, setAuthenticated] = useState(() =>
     sessionStorage.getItem(STORAGE_KEY) === "1"
   );
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   if (!authenticated) {
     return <AdminLogin onSuccess={() => setAuthenticated(true)} />;
   }
+
+  return <AdminPanel onLogout={() => { sessionStorage.removeItem(STORAGE_KEY); setAuthenticated(false); }} />;
+}
+
+function AdminPanel({ onLogout }: { onLogout: () => void }) {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: stats } = useGetStatsSummary();
   const { data: orders } = useListOrders();
@@ -609,7 +614,7 @@ export default function Admin() {
           <Button
             variant="outline"
             className="w-full justify-start text-muted-foreground"
-            onClick={() => { sessionStorage.removeItem(STORAGE_KEY); setAuthenticated(false); }}
+            onClick={onLogout}
           >
             <LogOut className="mr-2 h-4 w-4" /> Sign Out
           </Button>
