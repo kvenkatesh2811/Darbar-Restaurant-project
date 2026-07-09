@@ -7,10 +7,12 @@ import feedbackRouter from "./feedback";
 import leadsRouter from "./leads";
 import ordersRouter from "./orders";
 import statsRouter from "./stats";
+import adminAuthRouter from "./admin-auth";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(adminAuthRouter);
 router.use(menuRouter);
 router.use(specialsRouter);
 router.use(reviewsRouter);

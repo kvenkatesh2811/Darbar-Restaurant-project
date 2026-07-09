@@ -401,10 +401,90 @@ function SpecialDialog({
   );
 }
 
+const STORAGE_KEY = "darbar_admin_auth";
+
+function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        sessionStorage.setItem(STORAGE_KEY, "1");
+        onSuccess();
+      } else {
+        setError("Incorrect password. Please try again.");
+      }
+    } catch {
+      setError("Could not reach the server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-muted/30 flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <h1 className="font-serif text-4xl font-bold text-primary mb-2">Darbar</h1>
+          <p className="text-muted-foreground text-sm">Admin Panel — Staff Only</p>
+        </div>
+        <Card className="shadow-xl border-border">
+          <CardHeader className="pb-4">
+            <CardTitle className="font-serif text-2xl text-center">Sign In</CardTitle>
+            <CardDescription className="text-center">Enter your admin password to continue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="admin-password">Password</Label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  placeholder="Enter admin password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  autoFocus
+                  autoComplete="current-password"
+                />
+              </div>
+              {error && (
+                <p className="text-sm text-destructive flex items-center gap-1.5">
+                  <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                  {error}
+                </p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading || !password}>
+                {loading ? "Signing in…" : "Sign In"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 export default function Admin() {
+  const [authenticated, setAuthenticated] = useState(() =>
+    sessionStorage.getItem(STORAGE_KEY) === "1"
+  );
   const [activeTab, setActiveTab] = useState("dashboard");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  if (!authenticated) {
+    return <AdminLogin onSuccess={() => setAuthenticated(true)} />;
+  }
 
   const { data: stats } = useGetStatsSummary();
   const { data: orders } = useListOrders();
@@ -520,12 +600,19 @@ export default function Admin() {
             </Button>
           ))}
         </nav>
-        <div className="mt-auto pt-6 border-t border-border">
+        <div className="mt-auto pt-6 border-t border-border space-y-2">
           <Link href="/">
-            <Button variant="outline" className="w-full justify-start text-muted-foreground">
-              <LogOut className="mr-2 h-4 w-4" /> Return to Site
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground">
+              ← Return to Site
             </Button>
           </Link>
+          <Button
+            variant="outline"
+            className="w-full justify-start text-muted-foreground"
+            onClick={() => { sessionStorage.removeItem(STORAGE_KEY); setAuthenticated(false); }}
+          >
+            <LogOut className="mr-2 h-4 w-4" /> Sign Out
+          </Button>
         </div>
       </aside>
 
