@@ -1,0 +1,487 @@
+Continue the existing "Darbar Multi-Cuisine Restaurant" project.
+
+IMPORTANT:
+- Do NOT recreate existing pages.
+- Do NOT overwrite existing files.
+- Do NOT remove current functionality.
+- Extend the current architecture only.
+- Reuse existing components whenever possible.
+- Follow the existing coding style.
+- Maintain production-quality code.
+
+==================================================
+TECH STACK (USE THESE ONLY)
+==================================================
+
+Frontend:
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- Axios
+- React Hot Toast
+- Context API
+
+Backend:
+- Next.js API Routes
+- Server Actions where appropriate
+
+Database:
+- Supabase PostgreSQL
+
+Authentication:
+- Clerk Authentication
+- Existing Admin Role
+
+Storage:
+- Supabase Storage
+
+Payments:
+- Razorpay (keep integration ready)
+
+Emails:
+- Resend
+
+AI:
+- Gemini API
+
+Deployment:
+- Vercel
+
+==================================================
+ARCHITECTURE RULES
+==================================================
+
+1. Never overwrite existing code.
+2. Never recreate existing pages.
+3. Extend current components only.
+4. Keep reusable architecture.
+5. Use TypeScript everywhere.
+6. Use service layer pattern.
+7. Follow clean architecture.
+8. Use toast notifications.
+9. Mobile-first design.
+10. Production-ready code only.
+
+==================================================
+FEATURE 1 — SHOPPING CART
+==================================================
+
+Integrate cart into existing project.
+
+Features:
+
+- Add To Cart
+- Remove Item
+- Increase Quantity
+- Decrease Quantity
+- Clear Cart
+- Cart Badge Count
+- Subtotal
+- Grand Total
+
+Persist cart using:
+
+localStorage
+
+Create:
+
+components/cart/CartDrawer.tsx
+components/cart/CartItem.tsx
+
+Context:
+
+context/CartContext.tsx
+
+Use React Hot Toast.
+
+==================================================
+FEATURE 2 — CHECKOUT PAGE
+==================================================
+
+Create:
+
+app/checkout/page.tsx
+
+Fields:
+
+- Full Name
+- Phone Number
+- Email
+- Pickup Time
+- Notes
+
+Display:
+
+- Ordered Items
+- Quantity
+- Price
+- Total Amount
+
+Success Toast:
+
+"Order placed successfully."
+
+Create API Route:
+
+POST /api/orders
+
+Store in Supabase:
+
+orders table
+
+==================================================
+FEATURE 3 — PAYMENT MODULE
+==================================================
+
+Create payment structure for:
+
+- Cash on Pickup
+- UPI
+- Google Pay
+- PhonePe
+- Paytm
+
+Keep Razorpay integration ready.
+
+Create:
+
+app/payment/page.tsx
+
+API:
+
+POST /api/payments
+
+Store inside:
+
+payments table
+
+==================================================
+FEATURE 4 — CUSTOMER INFORMATION
+==================================================
+
+Create:
+
+app/customer-info/page.tsx
+
+Fields:
+
+- Name
+- Date Of Birth
+- Email
+- Phone Number
+- City
+- Favorite Food
+- Special Occasion
+- Queries
+
+API:
+
+POST /api/customers
+
+Store inside:
+
+users table
+
+==================================================
+FEATURE 5 — LEAD COLLECTION POPUP
+==================================================
+
+Show popup after 10 seconds.
+
+Title:
+
+"Get Festival Offers & Birthday Discounts"
+
+Fields:
+
+- Name
+- Phone Number
+- Date Of Birth
+
+Create reusable component:
+
+components/LeadPopup.tsx
+
+API:
+
+POST /api/leads
+
+Store inside:
+
+leads table
+
+==================================================
+FEATURE 6 — BIRTHDAY REMINDER SYSTEM
+==================================================
+
+Create:
+
+lib/birthdayService.ts
+
+Automatically detect birthdays tomorrow.
+
+Generate:
+
+"Happy Birthday from Darbar Multi-Cuisine Restaurant! Enjoy your 10% Birthday Discount."
+
+Prepare integration for:
+
+- Resend Email
+- WhatsApp API
+
+Add Admin Dashboard section:
+
+Upcoming Birthdays
+
+Display:
+
+- Customer Name
+- Birthday Date
+- Phone Number
+
+==================================================
+FEATURE 7 — LOYALTY REWARD SYSTEM
+==================================================
+
+Rules:
+
+- Every 10th Meal Free
+- Birthday Discount 10%
+
+Track:
+
+- Visits
+- Orders
+- Reward Status
+- Loyalty Points
+
+Create:
+
+components/LoyaltyProgress.tsx
+
+Display progress bar.
+
+Store inside:
+
+loyalty_rewards table
+
+==================================================
+FEATURE 8 — FESTIVAL MESSAGE GENERATOR
+==================================================
+
+Inside existing Admin Dashboard add:
+
+Festival Message Generator
+
+Use Gemini API.
+
+Generate WhatsApp-ready messages for:
+
+- Diwali
+- Sankranti
+- Ugadi
+
+Allow exporting customer phone numbers.
+
+==================================================
+FEATURE 9 — FEEDBACK SYSTEM
+==================================================
+
+Create:
+
+app/feedback/page.tsx
+
+Fields:
+
+- Name
+- Phone Number
+- Rating
+- Feedback
+
+API:
+
+POST /api/feedback
+
+Store inside:
+
+feedback table
+
+Admin can view all feedback.
+
+==================================================
+FEATURE 10 — QR MENU
+==================================================
+
+Generate QR code for:
+
+/menu
+
+Create:
+
+components/QRCodeMenu.tsx
+
+Buttons:
+
+- Download QR
+- Print QR
+
+Use:
+
+npm install qrcode
+
+==================================================
+FEATURE 11 — ANALYTICS DASHBOARD
+==================================================
+
+Extend existing Admin Dashboard.
+
+Show:
+
+- Total Customers
+- Total Orders
+- Total Revenue
+- Average Rating
+- Most Ordered Item
+- Upcoming Birthdays
+
+Use charts where appropriate.
+
+==================================================
+FEATURE 12 — ADMIN PANEL IMPROVEMENTS
+==================================================
+
+Integrate inside existing Admin Dashboard.
+
+Add:
+
+- Leads Management
+- Orders Management
+- Payment History
+- Birthday Dashboard
+- Loyalty Dashboard
+- Feedback Dashboard
+- CSV Export
+
+Protect with existing Clerk Admin Role.
+
+==================================================
+EMAIL FEATURES
+==================================================
+
+Use Resend.
+
+Templates:
+
+- Welcome Email
+- Order Confirmation
+- Birthday Wishes
+- Festival Offers
+
+==================================================
+AI FEATURES
+==================================================
+
+Use Gemini API for:
+
+- Festival Message Generation
+- Promotional Content
+- WhatsApp Messages
+
+==================================================
+SUPABASE TABLES
+==================================================
+
+users
+admins
+menu_items
+categories
+orders
+payments
+reviews
+feedback
+leads
+loyalty_rewards
+birthdays
+special_offers
+
+Implement Row Level Security.
+
+==================================================
+API ROUTES
+==================================================
+
+Implement:
+
+GET
+POST
+PUT
+PATCH
+DELETE
+
+Follow:
+
+- Service Layer Pattern
+- Reusable Functions
+- Error Handling
+- Type Safety
+
+==================================================
+EXTRA FEATURES
+==================================================
+
+- Loading Skeletons
+- Empty States
+- Error Boundaries
+- Search
+- Pagination
+- Filters
+- Toast Notifications
+- Lazy Loading
+- Responsive Design
+- Breadcrumbs
+- Scroll To Top
+- Image Optimization
+- Dark Mode
+
+==================================================
+PACKAGES
+==================================================
+
+npm install @supabase/supabase-js
+npm install @clerk/nextjs
+npm install axios
+npm install framer-motion
+npm install react-hot-toast
+npm install razorpay
+npm install resend
+npm install @google/genai
+npm install qrcode
+npm install date-fns
+
+==================================================
+DEPLOYMENT
+==================================================
+
+Frontend + APIs:
+Vercel
+
+Database:
+Supabase PostgreSQL
+
+Authentication:
+Clerk
+
+Storage:
+Supabase Storage
+
+Emails:
+Resend
+
+Payments:
+Razorpay
+
+AI:
+Gemini API
+
+Generate complete production-ready code while preserving all existing functionality and extending the current architecture only.
