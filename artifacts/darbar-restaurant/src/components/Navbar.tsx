@@ -32,12 +32,26 @@ export function Navbar() {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  const navLinks = [
+  const publicLinks = [
     { href: "/", label: "Home" },
     { href: "/menu", label: "Menu" },
     { href: "/order", label: "Order Online" },
     { href: "/admin", label: "Admin" },
   ];
+
+  const linkClass = (href: string) =>
+    `text-sm font-medium transition-colors hover:text-primary ${
+      location === href
+        ? "text-primary"
+        : isScrolled || location !== "/"
+        ? "text-foreground"
+        : "text-white/90 hover:text-white drop-shadow-sm"
+    }`;
+
+  const mobileLinkClass = (href: string) =>
+    `text-base font-medium py-2 px-4 rounded-md transition-colors ${
+      location === href ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
+    }`;
 
   return (
     <nav
@@ -56,18 +70,8 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                location === link.href
-                  ? "text-primary"
-                  : isScrolled || location !== "/"
-                  ? "text-foreground"
-                  : "text-white/90 hover:text-white drop-shadow-sm"
-              }`}
-            >
+          {publicLinks.map((link) => (
+            <Link key={link.href} href={link.href} className={linkClass(link.href)}>
               {link.label}
             </Link>
           ))}
@@ -106,13 +110,11 @@ export function Navbar() {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg p-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
-          {navLinks.map((link) => (
+          {publicLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-base font-medium py-2 px-4 rounded-md transition-colors ${
-                location === link.href ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
-              }`}
+              className={mobileLinkClass(link.href)}
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {link.label}

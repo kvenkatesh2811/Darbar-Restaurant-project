@@ -1,0 +1,1 @@
+- [Clerk Auth — Darbar](clerk-auth-darbar.md) — Replit-managed Clerk setup: proxy wiring, WouterRouter base, publishableKeyFromHost, ADMIN_EMAILS guard, Tailwind v4 layer order.
