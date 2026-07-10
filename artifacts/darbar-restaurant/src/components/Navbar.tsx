@@ -36,7 +36,6 @@ export function Navbar() {
     { href: "/", label: "Home" },
     { href: "/menu", label: "Menu" },
     { href: "/order", label: "Order Online" },
-    { href: "/admin", label: "Admin" },
   ];
 
   const linkClass = (href: string) =>
