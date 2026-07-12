@@ -9,6 +9,7 @@ import {
   DeleteMenuItemParams,
   ListCategoriesResponse,
 } from "@workspace/api-zod";
+import { deleteStorageImage } from "./upload";
 
 const router: IRouter = Router();
 
@@ -22,15 +23,9 @@ router.get("/menu/items", async (req, res): Promise<void> => {
   const { category, search, isVeg } = parsed.data;
   const conditions: SQL[] = [];
 
-  if (category) {
-    conditions.push(eq(menuItemsTable.categorySlug, category));
-  }
-  if (search) {
-    conditions.push(ilike(menuItemsTable.name, `%${search}%`));
-  }
-  if (isVeg !== undefined) {
-    conditions.push(eq(menuItemsTable.isVeg, isVeg));
-  }
+  if (category) conditions.push(eq(menuItemsTable.categorySlug, category));
+  if (search) conditions.push(ilike(menuItemsTable.name, `%${search}%`));
+  if (isVeg !== undefined) conditions.push(eq(menuItemsTable.isVeg, isVeg));
 
   const items = await db
     .select({
@@ -107,6 +102,13 @@ router.patch("/menu/items/:id", async (req, res): Promise<void> => {
     return;
   }
 
+  // Capture the old imageUrl so we can delete the storage object if it changes.
+  const [existing] = await db
+    .select({ imageUrl: menuItemsTable.imageUrl })
+    .from(menuItemsTable)
+    .where(eq(menuItemsTable.id, params.data.id))
+    .limit(1);
+
   const updateData: Partial<typeof menuItemsTable.$inferInsert> = {};
   if (parsed.data.name !== undefined) updateData.name = parsed.data.name;
   if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
@@ -125,6 +127,13 @@ router.patch("/menu/items/:id", async (req, res): Promise<void> => {
   if (!item) {
     res.status(404).json({ error: "Menu item not found" });
     return;
+  }
+
+  // Delete the replaced Supabase image (best-effort, don't block the response).
+  const oldUrl = existing?.imageUrl;
+  const newUrl = parsed.data.imageUrl;
+  if (oldUrl && newUrl !== undefined && newUrl !== oldUrl) {
+    deleteStorageImage(oldUrl).catch(() => {});
   }
 
   const category = await db
@@ -157,6 +166,9 @@ router.delete("/menu/items/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Menu item not found" });
     return;
   }
+
+  // Clean up the associated Supabase Storage image (best-effort).
+  deleteStorageImage(item.imageUrl).catch(() => {});
 
   res.sendStatus(204);
 });

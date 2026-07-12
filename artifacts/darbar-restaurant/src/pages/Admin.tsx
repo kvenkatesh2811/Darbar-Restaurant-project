@@ -65,6 +65,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { MenuItem, Special } from "@workspace/api-client-react";
+import { ImageUploader } from "@/components/ImageUploader";
 
 const menuItemSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -73,6 +74,7 @@ const menuItemSchema = z.object({
   categorySlug: z.string().min(1, "Category is required"),
   isVeg: z.boolean(),
   isAvailable: z.boolean(),
+  imageUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 type MenuItemFormValues = z.infer<typeof menuItemSchema>;
@@ -97,7 +99,7 @@ function MenuItemDialog({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
       name: "", description: "", price: 0, categorySlug: "",
-      isVeg: false, isAvailable: true,
+      isVeg: false, isAvailable: true, imageUrl: "",
     },
   });
 
@@ -110,9 +112,10 @@ function MenuItemDialog({
         categorySlug: editItem.categorySlug,
         isVeg: editItem.isVeg,
         isAvailable: editItem.isAvailable,
+        imageUrl: editItem.imageUrl || "",
       });
     } else {
-      form.reset({ name: "", description: "", price: 0, categorySlug: "", isVeg: false, isAvailable: true });
+      form.reset({ name: "", description: "", price: 0, categorySlug: "", isVeg: false, isAvailable: true, imageUrl: "" });
     }
   }, [editItem, open]);
 
@@ -206,6 +209,22 @@ function MenuItemDialog({
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Photo (Optional)</FormLabel>
+                  <FormControl>
+                    <ImageUploader
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="flex gap-6">
               <FormField
                 control={form.control}
@@ -291,7 +310,11 @@ function SpecialDialog({
   }, [editSpecial, open]);
 
   const onSubmit = (values: SpecialFormValues) => {
-    const payload = { ...values, imageUrl: values.imageUrl || undefined };
+    // Send imageUrl as-is (including "") so an explicit removal is
+    // persisted — the backend only skips updating fields that are
+    // `undefined`, so coercing "" to undefined here would silently keep
+    // the old image URL in the database.
+    const payload = values;
     const invalidate = () => {
       queryClient.invalidateQueries({ queryKey: getListAllSpecialsQueryKey() });
       onClose();
@@ -383,8 +406,13 @@ function SpecialDialog({
               name="imageUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image URL (Optional)</FormLabel>
-                  <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                  <FormLabel>Photo (Optional)</FormLabel>
+                  <FormControl>
+                    <ImageUploader
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

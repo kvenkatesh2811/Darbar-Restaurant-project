@@ -6,6 +6,7 @@ import {
   UpdateSpecialParams,
   UpdateSpecialBody,
 } from "@workspace/api-zod";
+import { deleteStorageImage } from "./upload";
 
 const router: IRouter = Router();
 
@@ -63,6 +64,13 @@ router.patch("/specials/:id", async (req, res): Promise<void> => {
     return;
   }
 
+  // Fetch the current record so we can clean up the old image if it changed.
+  const [existing] = await db
+    .select({ imageUrl: specialsTable.imageUrl })
+    .from(specialsTable)
+    .where(eq(specialsTable.id, params.data.id))
+    .limit(1);
+
   const updateData: Partial<typeof specialsTable.$inferInsert> = {};
   if (parsed.data.dishName !== undefined) updateData.dishName = parsed.data.dishName;
   if (parsed.data.description !== undefined) updateData.description = parsed.data.description;
@@ -79,6 +87,13 @@ router.patch("/specials/:id", async (req, res): Promise<void> => {
   if (!special) {
     res.status(404).json({ error: "Special not found" });
     return;
+  }
+
+  // Delete the old Supabase Storage image if the URL changed.
+  const oldUrl = existing?.imageUrl;
+  const newUrl = parsed.data.imageUrl;
+  if (oldUrl && newUrl !== undefined && newUrl !== oldUrl) {
+    await deleteStorageImage(oldUrl);
   }
 
   res.json({
@@ -119,6 +134,9 @@ router.delete("/specials/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Special not found" });
     return;
   }
+
+  // Clean up the associated Supabase Storage image (best-effort).
+  await deleteStorageImage(deleted.imageUrl);
 
   res.status(204).end();
 });

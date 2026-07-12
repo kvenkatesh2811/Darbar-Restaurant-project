@@ -7,10 +7,12 @@ import feedbackRouter from "./feedback";
 import leadsRouter from "./leads";
 import ordersRouter from "./orders";
 import statsRouter from "./stats";
+import uploadRouter from "./upload";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(uploadRouter);
 router.use(menuRouter);
 router.use(specialsRouter);
 router.use(reviewsRouter);

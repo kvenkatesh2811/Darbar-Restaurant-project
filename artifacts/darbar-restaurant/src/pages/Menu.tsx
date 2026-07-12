@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Search, Download, Printer, Info } from "lucide-react";
+import { Search, Download, Printer, Info, UtensilsCrossed } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -178,7 +178,24 @@ export default function Menu() {
                             transition={{ duration: 0.4, delay: index * 0.05 }}
                             key={`${item.name}-${index}`}
                           >
-                            <Card className="h-full overflow-hidden hover:border-primary/30 transition-colors bg-card">
+                            <Card className="h-full overflow-hidden hover:border-primary/30 transition-colors bg-card group">
+                              {item.imageUrl ? (
+                                <div className="aspect-video overflow-hidden bg-muted">
+                                  <img
+                                    src={item.imageUrl}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    loading="lazy"
+                                    decoding="async"
+                                    width={400}
+                                    height={225}
+                                  />
+                                </div>
+                              ) : (
+                                <div className="aspect-video bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-950/20 dark:to-amber-900/20 flex items-center justify-center">
+                                  <UtensilsCrossed className="h-8 w-8 text-orange-200 dark:text-orange-800" />
+                                </div>
+                              )}
                               <CardContent className="p-5 flex flex-col h-full">
                                 <div className="flex justify-between items-start gap-4 mb-2">
                                   <div className="flex-1">

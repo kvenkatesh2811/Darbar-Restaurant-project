@@ -51,9 +51,10 @@ app.use(
 );
 
 // ── Admin-only route protection ─────────────────────────────────────────────
-// Blanket protect /api/admin/* and /api/stats/*
+// Blanket protect /api/admin/*, /api/stats/*, and image upload/delete.
 app.use("/api/admin", requireAuth);
 app.use("/api/stats", requireAuth);
+app.use("/api/upload", requireAuth);
 
 // Protect read-only admin views on mixed routes
 app.use("/api/leads", (req, res, next) => {
