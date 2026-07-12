@@ -1,0 +1,222 @@
+Fix the Order Online page without modifying any unrelated functionality.
+
+Current issues:
+
+1. Food images are not displaying in the Order Online page.
+2. Menu cards only display the food name, description and price.
+3. Every menu item should display its own matching food image.
+4. Images should match the food name exactly.
+5. The cart should also display a thumbnail image for each ordered item.
+
+Requirements:
+
+• Do not redesign the UI.
+• Do not modify the checkout logic.
+• Do not modify the payment flow.
+• Do not modify authentication.
+• Do not modify routing.
+• Do not modify the admin panel.
+• Only fix the image system.
+
+Image Requirements:
+
+Use the existing Supabase Storage bucket:
+menu-images
+
+Every food item must have its own matching image.
+
+Examples:
+
+Chicken Dum Biryani → Chicken Dum Biryani image
+
+Mutton Biryani → Mutton Biryani image
+
+Fry Piece Biryani → Fry Piece Biryani image
+
+Apollo Fish Biryani → Apollo Fish Biryani image
+
+Egg Biryani → Egg Biryani image
+
+Veg Dum Biryani → Veg Dum Biryani image
+
+Chicken 65 → Chicken 65 image
+
+Apollo Fish → Apollo Fish image
+
+Chicken Lollipop → Chicken Lollipop image
+
+Chilli Chicken → Chilli Chicken image
+
+Paneer 65 → Paneer 65 image
+
+Paneer Manchurian → Paneer Manchurian image
+
+Veg Fried Rice → Veg Fried Rice image
+
+Chicken Fried Rice → Chicken Fried Rice image
+
+Chicken Noodles → Chicken Noodles image
+
+Egg Fried Rice → Egg Fried Rice image
+
+Fresh Lime Soda → Fresh Lime Soda image
+
+Oreo Shake → Oreo Shake image
+
+Brownie with Ice Cream → Brownie with Ice Cream image
+
+Implementation:
+
+• Verify every menu item has an image URL stored in the database.
+• If missing, upload matching royalty-free food images into the existing Supabase Storage bucket (menu-images).
+• Save only the public image URL in the database.
+• Fetch images dynamically.
+• Never hardcode image URLs.
+• Display the food image at the top of every menu card.
+• Display a thumbnail image beside every cart item.
+• Display the selected item's image inside the order summary.
+• Use Next.js Image component.
+• Use lazy loading.
+• Use responsive images.
+• Add loading skeletons.
+• Add fallback images for failed image loads.
+
+==================================================
+NEW FEATURE — RESTAURANT QR CODE SYSTEM
+==================================================
+
+Add a premium QR Code feature across the website.
+
+The QR Code should always point to the restaurant website home page.
+
+Purpose:
+Customers visiting the restaurant should be able to scan the QR code and instantly open the restaurant website on their mobile phone to:
+- Browse the full menu
+- View Today's Special
+- Order Online
+- View offers
+- View loyalty rewards
+- Contact the restaurant
+
+Create a reusable QRCode component.
+
+Best locations for the QR Code:
+
+1. Home Page
+Place a stylish QR Code card near the Hero CTA or just above the Footer.
+
+Heading:
+"Scan to Explore Our Menu"
+
+Subtitle:
+"Instantly view our full menu and place your order."
+
+Buttons:
+• Download QR
+• Print QR
+
+--------------------------------------------------
+
+2. Menu Page
+
+Add a floating QR card on desktop.
+
+On mobile, place it below the menu filters.
+
+--------------------------------------------------
+
+3. Order Online Page
+
+Display a compact QR Code in the right sidebar below the cart summary.
+
+Heading:
+"Scan & Share"
+
+Allow customers to share the restaurant menu with friends.
+
+--------------------------------------------------
+
+4. Contact Page
+
+Display the QR Code beside the Google Map.
+
+Text:
+
+"Scan to save our restaurant."
+
+--------------------------------------------------
+
+5. Footer
+
+Add a small elegant QR Code in the footer.
+
+Text:
+
+"Quick Menu Access"
+
+--------------------------------------------------
+
+Admin Panel
+
+Add a new section:
+
+Restaurant QR Code
+
+Admin can:
+
+• Download QR
+• Print QR
+• Preview QR
+• Regenerate QR if website URL changes
+
+Automatically generate the QR Code using the production website URL.
+
+Do not hardcode localhost URLs.
+
+Use environment variables for the website URL.
+
+==================================================
+QR DESIGN
+==================================================
+
+Use premium styling.
+
+• Rounded card
+• Warm Orange & Gold theme
+• Restaurant logo in the center of the QR (optional if supported)
+• Soft shadow
+• Mobile responsive
+• High-resolution printable output
+
+==================================================
+VERIFICATION
+==================================================
+
+✓ Order Online page displays matching food images.
+✓ Popular Dishes displays matching food images.
+✓ Our Menu displays matching food images.
+✓ Cart displays image thumbnails.
+✓ Checkout summary displays images.
+✓ All image URLs load successfully.
+✓ No broken image links.
+✓ No console errors.
+✓ QR Code opens the restaurant website correctly.
+✓ QR Code works on Android and iPhone.
+✓ Download and Print buttons work.
+✓ Responsive on desktop, tablet and mobile.
+
+==================================================
+IMPORTANT
+==================================================
+
+• Do NOT modify any unrelated functionality.
+• Do NOT redesign the website.
+• Do NOT change authentication.
+• Do NOT change checkout logic.
+• Do NOT change payment flow.
+• Do NOT change routing.
+• Do NOT modify the Admin architecture.
+• Do NOT overwrite existing working components.
+• Reuse existing components wherever possible.
+• Keep the current Next.js + TypeScript + Tailwind CSS + Supabase architecture intact.
+• Only implement the food image fixes and the Restaurant QR Code system.
