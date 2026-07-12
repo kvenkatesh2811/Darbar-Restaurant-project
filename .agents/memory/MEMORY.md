@@ -1,1 +1,2 @@
 - [Clerk Auth — Darbar](clerk-auth-darbar.md) — Replit-managed Clerk setup: proxy wiring, WouterRouter base, publishableKeyFromHost, ADMIN_EMAILS guard, Tailwind v4 layer order.
+- [Darbar storage & seeding](darbar-storage-and-seeding.md) — uses Supabase Storage (not App Storage); menu-item write routes need Clerk auth, so seed via direct SQL.

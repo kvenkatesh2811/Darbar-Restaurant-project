@@ -14,6 +14,8 @@ import { LeadPopup } from "@/components/LeadPopup";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { useToast } from "@/hooks/use-toast";
+import { DishImage } from "@/components/DishImage";
+import { RestaurantQRCode } from "@/components/RestaurantQRCode";
 
 export default function Home() {
   const { data: menuItems } = useListMenuItems();
@@ -194,6 +196,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredItems.map((item) => (
               <Card key={item.id} className="overflow-hidden group hover:border-primary/50 transition-colors">
+                <DishImage src={item.imageUrl} alt={item.name} />
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-2">
@@ -548,6 +551,14 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              <div className="bg-muted p-6 rounded-xl border border-border flex flex-col sm:flex-row items-center gap-4">
+                <RestaurantQRCode path="/" size={88} showActions={false} />
+                <div className="text-center sm:text-left">
+                  <h4 className="font-serif font-bold text-lg mb-1">Save Our Restaurant</h4>
+                  <p className="text-sm text-muted-foreground">Scan to keep Darbar's menu and location handy on your phone.</p>
+                </div>
+              </div>
             </div>
 
             {/* Map */}
@@ -565,6 +576,18 @@ export default function Home() {
             </div>
 
           </div>
+        </div>
+      </section>
+
+      {/* SCAN TO EXPLORE MENU */}
+      <section className="py-24 bg-card border-t border-border">
+        <div className="container mx-auto px-4 flex flex-col items-center text-center">
+          <h2 className="text-primary font-medium tracking-widest uppercase mb-2">Take It With You</h2>
+          <h3 className="font-serif text-4xl md:text-5xl font-bold mb-4">Scan to Explore Our Menu</h3>
+          <p className="text-muted-foreground max-w-xl mb-10">
+            Open our full menu, order online, or share it with friends — just point your camera at the code below.
+          </p>
+          <RestaurantQRCode path="/menu" size={180} />
         </div>
       </section>
     </div>

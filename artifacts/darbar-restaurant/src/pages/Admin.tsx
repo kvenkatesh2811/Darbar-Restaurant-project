@@ -4,8 +4,9 @@ import { useClerk, Show } from "@clerk/react";
 import { 
   BarChart3, Users, MessageSquare, ShoppingCart, 
   LogOut, ChefHat, Star, Clock, Plus, Edit2, Trash2,
-  MessageCircle, AlertTriangle, TrendingUp, Sparkles, ToggleLeft, ToggleRight
+  MessageCircle, AlertTriangle, TrendingUp, Sparkles, ToggleLeft, ToggleRight, QrCode
 } from "lucide-react";
+import { RestaurantQRCode, getSiteUrl } from "@/components/RestaurantQRCode";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, Area, AreaChart,
@@ -547,6 +548,7 @@ function AdminPanel() {
     { id: "leads", label: "Leads & Customers", icon: Users, badge: null },
     { id: "reviews", label: "Reviews", icon: MessageSquare, badge: null },
     { id: "feedback", label: "Feedback", icon: MessageCircle, badge: null },
+    { id: "qr-code", label: "Restaurant QR Code", icon: QrCode, badge: null },
   ];
 
   return (
@@ -1140,6 +1142,52 @@ function AdminPanel() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* RESTAURANT QR CODE */}
+        {activeTab === "qr-code" && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+            <div>
+              <h1 className="text-3xl font-bold font-serif">Restaurant QR Code</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Generated live from your site's URL — printing or downloading always points customers to the current, live site.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Homepage</CardTitle>
+                  <CardDescription>For flyers, table tents, and general signage.</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <RestaurantQRCode path="/" size={160} fileName="darbar-homepage-qr.png" />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Full Menu</CardTitle>
+                  <CardDescription>Best for dine-in tables — opens the menu directly.</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <RestaurantQRCode path="/menu" size={160} fileName="darbar-menu-qr.png" />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Order Online</CardTitle>
+                  <CardDescription>Best for takeaway counters and packaging.</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <RestaurantQRCode path="/order" size={160} fileName="darbar-order-qr.png" />
+                </CardContent>
+              </Card>
+            </div>
+            <Card>
+              <CardContent className="py-4 text-sm text-muted-foreground">
+                Each code is generated on the fly from <span className="font-medium text-foreground">{getSiteUrl("/")}</span> — there's nothing to "regenerate"; if your domain ever changes, these codes update automatically.
+              </CardContent>
+            </Card>
           </div>
         )}
       </main>

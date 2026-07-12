@@ -15,6 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DishImage } from "@/components/DishImage";
+import { RestaurantQRCode } from "@/components/RestaurantQRCode";
 
 const orderFormSchema = z.object({
   customerName: z.string().min(2, { message: "Name is required" }),
@@ -29,6 +31,7 @@ type CartItem = {
   price: number;
   quantity: number;
   isVeg: boolean;
+  imageUrl?: string | null;
 };
 
 const PICKUP_SLOTS = [
@@ -71,7 +74,7 @@ export default function Order() {
       if (existing) {
         return prev.map(i => i.id === itemId ? { ...i, quantity: i.quantity + 1 } : i);
       }
-      return [...prev, { id: itemId, name: item.name, price: Number(item.price), quantity: 1, isVeg: item.isVeg }];
+      return [...prev, { id: itemId, name: item.name, price: Number(item.price), quantity: 1, isVeg: item.isVeg, imageUrl: item.imageUrl }];
     });
     toast({ title: "Added to cart", description: `${item.name} added.`, duration: 1500 });
   };
@@ -190,7 +193,8 @@ export default function Order() {
                 {filteredItems.map(item => {
                   const cartItem = cart.find(c => c.id === item.id.toString());
                   return (
-                    <Card key={item.id} className={`hover:border-primary/50 transition-colors ${!item.isAvailable ? "opacity-60" : ""}`}>
+                    <Card key={item.id} className={`overflow-hidden hover:border-primary/50 transition-colors ${!item.isAvailable ? "opacity-60" : ""}`}>
+                      <DishImage src={item.imageUrl} alt={item.name} className="aspect-[16/10]" />
                       <CardContent className="p-4 flex flex-col h-full justify-between gap-3">
                         <div>
                           <div className="flex items-start gap-2 mb-1">
@@ -256,6 +260,12 @@ export default function Order() {
                     <div className="flex flex-col max-h-[35vh] overflow-y-auto p-4 space-y-3">
                       {cart.map(item => (
                         <div key={item.id} className="flex justify-between items-center gap-3">
+                          <DishImage
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className="w-12 h-12 aspect-square rounded-md shrink-0"
+                            iconClassName="h-4 w-4"
+                          />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
                               <div className={`shrink-0 w-3 h-3 rounded-sm flex items-center justify-center border ${item.isVeg ? "border-green-600" : "border-red-600"}`}>
@@ -370,6 +380,17 @@ export default function Order() {
                       </Button>
                     </form>
                   </Form>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="py-6">
+                  <RestaurantQRCode
+                    path="/order"
+                    size={128}
+                    title="Scan & Share"
+                    subtitle="Point your camera here to reopen this order page on your phone."
+                  />
                 </CardContent>
               </Card>
             </div>

@@ -1,12 +1,13 @@
 import { Link } from "wouter";
 import { RESTAURANT_DETAILS } from "@/lib/constants";
 import { Facebook, Instagram, Twitter, MapPin, Phone, Clock } from "lucide-react";
+import { RestaurantQRCode } from "@/components/RestaurantQRCode";
 
 export function Footer() {
   return (
     <footer className="bg-card border-t border-border pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
           <div className="col-span-1 md:col-span-2">
             <h3 className="font-serif text-3xl font-bold text-primary mb-4">{RESTAURANT_DETAILS.name}</h3>
             <p className="text-muted-foreground mb-6 max-w-md">
@@ -59,6 +60,11 @@ export function Footer() {
                 </div>
               </li>
             </ul>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-lg mb-4">Quick Menu Access</h4>
+            <RestaurantQRCode size={110} showActions={false} className="items-start text-left" />
           </div>
         </div>
         

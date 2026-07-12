@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Search, Download, Printer, Info, UtensilsCrossed } from "lucide-react";
+import { Search, Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,35 +9,20 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import QRCode from "qrcode";
 import { useListMenuItems, useListCategories } from "@workspace/api-client-react";
+import { DishImage } from "@/components/DishImage";
+import { RestaurantQRCode } from "@/components/RestaurantQRCode";
 
 export default function Menu() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isVegOnly, setIsVegOnly] = useState(false);
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState("");
 
   const { data: apiMenuItems } = useListMenuItems();
   const { data: categories } = useListCategories();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const generateQR = async () => {
-      try {
-        const url = await QRCode.toDataURL(window.location.href, {
-          width: 300,
-          margin: 2,
-          color: { dark: "#1F2937", light: "#FFFFFF" },
-        });
-        setQrCodeDataUrl(url);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    generateQR();
   }, []);
-
-  const handlePrint = () => { window.print(); };
 
   const allItems = apiMenuItems || [];
 
@@ -112,25 +97,8 @@ export default function Menu() {
               </div>
 
               {/* QR Code Section */}
-              <div className="mt-8 pt-8 border-t border-border text-center">
-                <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wider mb-4">Scan Menu</h4>
-                {qrCodeDataUrl && (
-                  <div className="bg-white p-2 rounded-lg inline-block shadow-sm border border-border mb-4">
-                    <img src={qrCodeDataUrl} alt="Menu QR Code" className="w-32 h-32" />
-                  </div>
-                )}
-                <div className="flex justify-center gap-2">
-                  <Button variant="outline" size="sm" onClick={handlePrint} className="w-full" data-testid="button-print-menu">
-                    <Printer className="mr-2 h-4 w-4" />
-                    Print
-                  </Button>
-                  <Button variant="outline" size="sm" asChild className="w-full" data-testid="button-download-menu">
-                    <a href={qrCodeDataUrl} download="darbar-menu-qr.png">
-                      <Download className="mr-2 h-4 w-4" />
-                      QR Code
-                    </a>
-                  </Button>
-                </div>
+              <div className="mt-8 pt-8 border-t border-border">
+                <RestaurantQRCode path="/menu" size={128} title="Scan Menu" fileName="darbar-menu-qr.png" />
               </div>
             </div>
           </div>
@@ -179,23 +147,7 @@ export default function Menu() {
                             key={`${item.name}-${index}`}
                           >
                             <Card className="h-full overflow-hidden hover:border-primary/30 transition-colors bg-card group">
-                              {item.imageUrl ? (
-                                <div className="aspect-video overflow-hidden bg-muted">
-                                  <img
-                                    src={item.imageUrl}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    loading="lazy"
-                                    decoding="async"
-                                    width={400}
-                                    height={225}
-                                  />
-                                </div>
-                              ) : (
-                                <div className="aspect-video bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-950/20 dark:to-amber-900/20 flex items-center justify-center">
-                                  <UtensilsCrossed className="h-8 w-8 text-orange-200 dark:text-orange-800" />
-                                </div>
-                              )}
+                              <DishImage src={item.imageUrl} alt={item.name} className="group-hover:[&_img]:scale-105" />
                               <CardContent className="p-5 flex flex-col h-full">
                                 <div className="flex justify-between items-start gap-4 mb-2">
                                   <div className="flex-1">
