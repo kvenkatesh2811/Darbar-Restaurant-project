@@ -1,0 +1,202 @@
+Fix ONLY the Order Online page.
+
+Current issues:
+
+1. Food images are not displaying in the menu cards.
+2. Food images are not displaying inside the cart.
+3. Add to Cart button is not working correctly.
+4. Remove from Cart button is missing or not functioning.
+5. Increase Quantity and Decrease Quantity are not working properly.
+6. Order Summary is not updating correctly.
+7. Payment section is missing or not visible.
+8. Checkout process is incomplete.
+9. Some food cards only show text without images.
+10. Cart functionality is inconsistent.
+
+==================================================
+ORDER ONLINE REQUIREMENTS
+==================================================
+
+Fix only the existing Order Online page.
+
+Do NOT redesign the page.
+
+Do NOT recreate the page.
+
+Do NOT change the existing layout.
+
+Reuse existing components wherever possible.
+
+==================================================
+MENU CARDS
+==================================================
+
+Each menu card must display:
+
+• Food Image
+• Food Name
+• Category
+• Description
+• Price
+• Veg / Non-Veg Badge
+• Add to Cart button
+
+Food images must match the food name exactly.
+
+Load images dynamically from Supabase Storage.
+
+Do not hardcode image URLs.
+
+==================================================
+CART FEATURES
+==================================================
+
+Fix and verify:
+
+✓ Add to Cart
+✓ Remove Item
+✓ Increase Quantity
+✓ Decrease Quantity
+✓ Clear Cart
+✓ Cart Badge
+✓ Cart Total
+✓ GST Calculation
+✓ Grand Total
+✓ Live Cart Updates
+
+Persist the cart using localStorage.
+
+==================================================
+ORDER SUMMARY
+==================================================
+
+Display:
+
+• Food Thumbnail
+• Food Name
+• Quantity
+• Individual Price
+• Total Price
+
+==================================================
+PAYMENT SECTION
+==================================================
+
+The payment section is currently missing or incomplete.
+
+Add it below the customer details.
+
+Payment Options:
+
+○ Cash on Pickup
+○ UPI
+○ Google Pay
+○ PhonePe
+○ Paytm
+
+Keep Razorpay integration ready.
+
+Only show the payment selection UI.
+
+Do not modify the existing payment backend.
+
+==================================================
+PLACE ORDER
+==================================================
+
+After selecting payment method:
+
+Show:
+
+Place Order
+
+After successful order:
+
+✓ Show React Hot Toast
+
+"Order placed successfully."
+
+Clear cart automatically.
+
+==================================================
+IMAGE SYSTEM
+==================================================
+
+Verify every menu item has a valid image.
+
+If missing:
+
+Upload matching royalty-free food images to the existing Supabase Storage bucket:
+
+menu-images
+
+Examples:
+
+Chicken Dum Biryani
+→ Chicken Dum Biryani image
+
+Mutton Biryani
+→ Mutton Biryani image
+
+Chicken 65
+→ Chicken 65 image
+
+Apollo Fish
+→ Apollo Fish image
+
+Veg Fried Rice
+→ Veg Fried Rice image
+
+Oreo Shake
+→ Oreo Shake image
+
+etc.
+
+==================================================
+DO NOT TOUCH
+==================================================
+
+Do NOT modify:
+
+• Home Page
+• Popular Dishes
+• Our Menu
+• Today's Special
+• Gallery
+• Admin Panel
+• Authentication
+• Clerk
+• Supabase Configuration
+• Database Schema
+• API Routes (unless required for cart)
+• Routing
+• Navbar
+• Footer
+• Loyalty System
+• Birthday System
+• Festival Messages
+• QR Code
+• Analytics
+• Any other existing feature
+
+Only fix the Order Online page.
+
+==================================================
+FINAL VERIFICATION
+==================================================
+
+✓ Food images display correctly.
+✓ Add to Cart works.
+✓ Remove Item works.
+✓ Quantity update works.
+✓ Cart updates instantly.
+✓ Payment section is visible.
+✓ Place Order works.
+✓ Mobile responsive.
+✓ No console errors.
+✓ No TypeScript errors.
+✓ No build errors.
+
+Do not overwrite existing working code.
+
+Preserve the current Next.js + TypeScript + Tailwind CSS + Supabase architecture.

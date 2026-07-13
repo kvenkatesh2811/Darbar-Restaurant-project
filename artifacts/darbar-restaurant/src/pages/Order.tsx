@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { Trash2, Plus, Minus, ShoppingBag, Clock, Phone, User, CheckCircle2 } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingBag, Clock, Phone, User, CheckCircle2, CreditCard, Wallet } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
@@ -39,19 +40,49 @@ const PICKUP_SLOTS = [
   "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM",
 ];
 
+const CART_STORAGE_KEY = "darbar-order-cart";
+
+const PAYMENT_METHODS = [
+  { id: "cash", label: "Cash on Pickup" },
+  { id: "upi", label: "UPI" },
+  { id: "gpay", label: "Google Pay" },
+  { id: "phonepe", label: "PhonePe" },
+  { id: "paytm", label: "Paytm" },
+] as const;
+
+function loadCartFromStorage(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function Order() {
   const { toast } = useToast();
   const createOrder = useCreateOrder();
   const { data: menuItems, isLoading: loadingItems } = useListMenuItems();
   const { data: categories, isLoading: loadingCats } = useListCategories();
 
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => loadCartFromStorage());
   const [isSuccess, setIsSuccess] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0].id);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch {
+      // ignore storage errors (e.g. private browsing)
+    }
+  }, [cart]);
 
   useEffect(() => {
     if (categories && categories.length > 0 && !activeCategory) {
@@ -89,6 +120,8 @@ export default function Order() {
 
   const removeFromCart = (id: string) => setCart(prev => prev.filter(item => item.id !== id));
 
+  const clearCart = () => setCart([]);
+
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const taxes = subtotal * 0.05;
@@ -99,10 +132,13 @@ export default function Order() {
       toast({ variant: "destructive", title: "Cart is empty", description: "Please add some items first." });
       return;
     }
+    const paymentLabel = PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label || "Cash on Pickup";
+    const notesWithPayment = [values.notes?.trim(), `Payment method: ${paymentLabel}`].filter(Boolean).join(" | ");
     createOrder.mutate(
       {
         data: {
           ...values,
+          notes: notesWithPayment,
           items: cart.map(item => ({
             menuItemId: parseInt(item.id),
             menuItemName: item.name,
@@ -112,7 +148,12 @@ export default function Order() {
         },
       },
       {
-        onSuccess: () => { setIsSuccess(true); setCart([]); window.scrollTo(0, 0); },
+        onSuccess: () => {
+          toast({ title: "Order placed successfully", description: "We'll have it ready for pickup soon." });
+          setIsSuccess(true);
+          clearCart();
+          window.scrollTo(0, 0);
+        },
         onError: () => toast({ variant: "destructive", title: "Order failed", description: "Please try again." }),
       }
     );
@@ -203,7 +244,10 @@ export default function Order() {
                             </div>
                             <div>
                               <h4 className="font-semibold leading-tight">{item.name}</h4>
-                              {item.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{item.description}</p>}
+                              {item.categoryName && (
+                                <Badge variant="secondary" className="font-normal text-[10px] mt-1">{item.categoryName}</Badge>
+                              )}
+                              {item.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{item.description}</p>}
                             </div>
                           </div>
                           <div className="font-bold text-primary ml-6">₹{item.price}</div>
@@ -244,9 +288,22 @@ export default function Order() {
             <div className="sticky top-24 space-y-4">
               <Card className="border-border shadow-md">
                 <CardHeader className="bg-muted/50 border-b border-border pb-4">
-                  <CardTitle className="font-serif text-2xl flex justify-between items-center">
-                    Your Order
-                    <Badge variant="secondary" className="font-sans text-sm">{cartCount} items</Badge>
+                  <CardTitle className="font-serif text-2xl flex justify-between items-center gap-2">
+                    <span className="flex items-center gap-2">
+                      Your Order
+                      <Badge variant="secondary" className="font-sans text-sm">{cartCount} items</Badge>
+                    </span>
+                    {cart.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground hover:text-destructive font-sans h-auto py-1 px-2"
+                        onClick={clearCart}
+                      >
+                        Clear Cart
+                      </Button>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -371,6 +428,38 @@ export default function Order() {
                           </FormItem>
                         )}
                       />
+
+                      <div>
+                        <Label className="flex items-center gap-2 mb-3"><CreditCard className="h-4 w-4" />Payment Method</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {PAYMENT_METHODS.map(method => (
+                            <button
+                              key={method.id}
+                              type="button"
+                              onClick={() => setPaymentMethod(method.id)}
+                              className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+                                paymentMethod === method.id
+                                  ? "border-primary bg-primary/5 text-primary"
+                                  : "border-border text-foreground hover:border-primary/50"
+                              }`}
+                            >
+                              <span
+                                className={`shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                  paymentMethod === method.id ? "border-primary" : "border-muted-foreground/40"
+                                }`}
+                              >
+                                {paymentMethod === method.id && <span className="w-2 h-2 rounded-full bg-primary" />}
+                              </span>
+                              {method.label}
+                            </button>
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1.5">
+                          <Wallet className="h-3.5 w-3.5" />
+                          You'll pay at pickup — online payment is coming soon.
+                        </p>
+                      </div>
+
                       <Button
                         type="submit"
                         className="w-full h-12 text-base font-semibold"
