@@ -113,12 +113,12 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="w-full max-w-5xl rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30 mb-8 bg-stone-900/80 backdrop-blur-sm"
+            className="w-full max-w-6xl rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30 mb-8 bg-stone-950/80 backdrop-blur-sm flex items-center justify-center"
           >
             <img
               src="/hero-banner.png"
               alt="Darbar Multi-Cuisine Restaurant - Good Food, Great Mood. Every Time."
-              className="w-full h-auto object-contain md:object-cover max-h-[500px] mx-auto transition-all duration-700 hover:scale-[1.01]"
+              className="w-full h-auto object-contain mx-auto block"
               loading="eager"
             />
           </motion.div>
