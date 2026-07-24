@@ -227,7 +227,9 @@ router.post("/orders", async (req, res): Promise<void> => {
   }
 
   // Send email confirmation in the background
-  sendOrderConfirmationEmail(order, req);
+  sendOrderConfirmationEmail(order, req).catch((err) => {
+    req.log.error({ err, orderId: order.id }, "Background sendOrderConfirmationEmail failed");
+  });
 
   res.status(201).json({
     ...order,
@@ -387,7 +389,9 @@ router.patch("/orders/:id", requireAuth, async (req, res): Promise<void> => {
 
   // Send status update email if the status actually changed
   if (existing.status !== parsed.data.status) {
-    sendOrderStatusUpdateEmail(order, existing.status, parsed.data.status, req);
+    sendOrderStatusUpdateEmail(order, existing.status, parsed.data.status, req).catch((err) => {
+      req.log.error({ err, orderId: order.id }, "Background sendOrderStatusUpdateEmail failed");
+    });
   }
 
   res.json({

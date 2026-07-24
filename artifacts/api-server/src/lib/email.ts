@@ -6,34 +6,84 @@ async function sendEmailViaResend(to: string, subject: string, htmlContent: stri
   const apiKey = process.env.RESEND_API_KEY;
   const fromEmail = process.env.RESEND_FROM_EMAIL;
 
-  if (!apiKey || !fromEmail) {
-    logger.warn("Resend email service is not configured. Missing RESEND_API_KEY or RESEND_FROM_EMAIL.");
+  const isApiKeyConfigured = Boolean(apiKey && apiKey.trim() !== "");
+  const isFromEmailConfigured = Boolean(fromEmail && fromEmail.trim() !== "");
+
+  logger.info(
+    {
+      RESEND_API_KEY_configured: isApiKeyConfigured,
+      RESEND_FROM_EMAIL_configured: isFromEmailConfigured,
+      fromEmail: fromEmail || null,
+      recipientEmail: to,
+      subject,
+    },
+    "Initiating email delivery via Resend API"
+  );
+
+  if (!apiKey || !fromEmail || !isApiKeyConfigured || !isFromEmailConfigured) {
+    logger.warn(
+      {
+        RESEND_API_KEY_configured: isApiKeyConfigured,
+        RESEND_FROM_EMAIL_configured: isFromEmailConfigured,
+      },
+      "Resend email service is not configured. Missing RESEND_API_KEY or RESEND_FROM_EMAIL."
+    );
     return;
   }
+
+  const cleanApiKey = apiKey.trim();
+  const cleanFromEmail = fromEmail.trim();
 
   try {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
+        "Authorization": `Bearer ${cleanApiKey}`,
       },
       body: JSON.stringify({
-        from: `Darbar Restaurant <${fromEmail}>`,
+        from: `Darbar Restaurant <${cleanFromEmail}>`,
         to: [to],
         subject: subject,
         html: htmlContent,
       }),
     });
 
+    const responseData: any = await response.json().catch(() => null);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Resend API returned status ${response.status}: ${JSON.stringify(errorData)}`);
+      const errorMsg = responseData ? JSON.stringify(responseData) : `HTTP ${response.status}`;
+      logger.error(
+        {
+          resendStatusCode: response.status,
+          resendErrorResponse: responseData,
+          recipientEmail: to,
+          subject,
+        },
+        `Resend API failed with status ${response.status}: ${errorMsg}`
+      );
+      return;
     }
 
-    logger.info({ to, subject }, "Email sent successfully via Resend API");
-  } catch (error) {
-    logger.error({ error, to, subject }, "Error occurred while sending email via Resend");
+    logger.info(
+      {
+        resendStatusCode: response.status,
+        resendEmailId: responseData?.id || null,
+        recipientEmail: to,
+        subject,
+      },
+      `Email accepted by Resend API successfully. ID: ${responseData?.id}`
+    );
+  } catch (error: any) {
+    logger.error(
+      {
+        err: error,
+        errorMessage: error?.message || String(error),
+        recipientEmail: to,
+        subject,
+      },
+      "Network or fetch error occurred while sending email via Resend"
+    );
   }
 }
 
