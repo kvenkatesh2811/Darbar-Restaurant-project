@@ -157,4 +157,4 @@ overrides:
 
 allowBuilds:
   '@clerk/shared': false
-  esbuild: false
+  esbuild: true
