@@ -81,35 +81,15 @@ export default function Home() {
       <FloatingWhatsApp />
       <ScrollToTop />
 
-      {/* HERO SECTION - RECREATED TO MATCH IMAGE 1 */}
-      <section className="relative min-h-[90vh] lg:min-h-screen pt-24 pb-16 lg:pt-32 lg:pb-20 bg-[#070605] text-white overflow-hidden flex items-center">
-        {/* Dark Ambient Gradients & Background Lighting */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-[#0c0a08]/90 to-[#070605] pointer-events-none z-0" />
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute top-1/3 right-1/4 translate-x-1/4 -translate-y-1/2 w-[35rem] h-[35rem] bg-orange-600/15 rounded-full blur-[140px] pointer-events-none" />
-
-        {/* Decorative Hanging Lanterns (Left & Right) */}
-        <div className="absolute top-0 left-6 md:left-12 pointer-events-none z-10 hidden sm:block opacity-75">
-          <svg width="48" height="220" viewBox="0 0 40 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="20" y1="0" x2="20" y2="90" stroke="#d97706" strokeWidth="1" strokeDasharray="3 3"/>
-            <path d="M12 90 C12 85, 28 85, 28 90 L34 115 C34 135, 6 135, 6 115 Z" fill="#1c1611" stroke="#f59e0b" strokeWidth="1.5"/>
-            <circle cx="20" cy="110" r="5" fill="#fbbf24" className="animate-pulse"/>
-            <path d="M16 135 L20 165 L24 135" stroke="#f59e0b" strokeWidth="1"/>
-          </svg>
-        </div>
-        <div className="absolute top-0 right-6 md:right-12 pointer-events-none z-10 hidden sm:block opacity-75">
-          <svg width="48" height="260" viewBox="0 0 40 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="20" y1="0" x2="20" y2="120" stroke="#d97706" strokeWidth="1" strokeDasharray="3 3"/>
-            <path d="M12 120 C12 115, 28 115, 28 120 L34 145 C34 165, 6 165, 6 145 Z" fill="#1c1611" stroke="#f59e0b" strokeWidth="1.5"/>
-            <circle cx="20" cy="140" r="5" fill="#fbbf24" className="animate-pulse"/>
-            <path d="M16 165 L20 195 L24 165" stroke="#f59e0b" strokeWidth="1"/>
-          </svg>
-        </div>
+      {/* HERO SECTION - FIRST IMAGE BACKGROUND MATCHING THIRD IMAGE TARGET */}
+      <section className="relative min-h-[90vh] lg:min-h-screen pt-24 pb-16 lg:pt-32 lg:pb-20 bg-[#070605] text-white overflow-hidden flex items-center bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}>
+        {/* Ambient Dark Overlay to ensure text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-0" />
 
         <div className="container relative z-20 mx-auto px-4 sm:px-6 lg:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
-            {/* LEFT COLUMN - TEXT CONTENT & CTAS */}
+            {/* LEFT COLUMN - TEXT CONTENT & CTAS OVERLAY */}
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -152,7 +132,7 @@ export default function Home() {
                 Authentic Rayalaseema Flavours & Multi-Cuisine Delights
               </p>
 
-              {/* Action Buttons - Matches Image 1 Buttons */}
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center lg:items-start mb-12">
                 <Link href="/menu">
                   <Button size="lg" className="w-full sm:w-auto text-base md:text-lg h-13 px-8 rounded-full shadow-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold transition-all hover:scale-105 border-0">
@@ -186,28 +166,6 @@ export default function Home() {
                   </div>
                   <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-amber-500/60" />
                 </div>
-              </div>
-            </motion.div>
-
-            {/* RIGHT COLUMN - COPPER BIRYANI HANDI POT WITH STEAM */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, x: 30 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              transition={{ duration: 0.9, delay: 0.2 }}
-              className="lg:col-span-5 flex justify-center items-center relative mt-6 lg:mt-0"
-            >
-              <div className="relative w-full max-w-md sm:max-w-lg lg:max-w-xl flex items-center justify-center">
-                {/* Glow & Ambient Lighting behind Biryani Pot */}
-                <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-3xl scale-90 pointer-events-none" />
-                <div className="absolute -bottom-6 w-3/4 h-12 bg-amber-700/40 rounded-full blur-2xl pointer-events-none" />
-
-                {/* Steam Biryani Handi Pot Image */}
-                <img
-                  src="/images/hero-biryani.png"
-                  alt="Authentic Darbar Biryani Handi"
-                  className="w-full h-auto object-contain max-h-[500px] lg:max-h-[580px] relative z-10 drop-shadow-[0_25px_40px_rgba(0,0,0,0.95)] transition-transform duration-500 hover:scale-[1.02]"
-                  loading="eager"
-                />
               </div>
             </motion.div>
 
