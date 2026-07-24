@@ -79,10 +79,20 @@ export function Navbar() {
       }`}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <span className={`font-serif text-2xl font-bold tracking-tight ${isScrolled || location !== "/" ? "text-primary" : "text-white drop-shadow-md"}`}>
-            Darbar
-          </span>
+        <Link href="/" className="flex items-center gap-3 group">
+          <img
+            src="/darbar-logo.png"
+            alt="Darbar Multi-Cuisine Restaurant"
+            className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-xl shadow-md border border-amber-500/30 transition-transform group-hover:scale-105"
+          />
+          <div className="flex flex-col">
+            <span className={`font-serif text-xl md:text-2xl font-bold tracking-tight leading-none ${isScrolled || location !== "/" ? "text-primary" : "text-white drop-shadow-md"}`}>
+              Darbar
+            </span>
+            <span className={`text-[10px] tracking-widest uppercase font-semibold mt-0.5 ${isScrolled || location !== "/" ? "text-amber-600 dark:text-amber-400" : "text-amber-300 drop-shadow-sm"}`}>
+              Multi-Cuisine
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}

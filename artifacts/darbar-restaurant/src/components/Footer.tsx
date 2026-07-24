@@ -9,7 +9,17 @@ export function Footer() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="font-serif text-3xl font-bold text-primary mb-4">{RESTAURANT_DETAILS.name}</h3>
+            <div className="flex items-center gap-3 mb-4">
+              <img
+                src="/darbar-logo.png"
+                alt="Darbar Logo"
+                className="h-12 w-12 object-contain rounded-xl shadow-md border border-amber-500/30"
+              />
+              <div>
+                <h3 className="font-serif text-3xl font-bold text-primary leading-none">{RESTAURANT_DETAILS.name}</h3>
+                <span className="text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 font-semibold">Multi-Cuisine Restaurant</span>
+              </div>
+            </div>
             <p className="text-muted-foreground mb-6 max-w-md">
               {RESTAURANT_DETAILS.tagline}. We bring you the authentic taste of South India with premium hospitality and a warm family atmosphere.
             </p>

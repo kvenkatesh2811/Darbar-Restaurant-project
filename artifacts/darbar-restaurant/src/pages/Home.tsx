@@ -82,82 +82,76 @@ export default function Home() {
       <ScrollToTop />
 
       {/* HERO SECTION */}
-      <section className="relative h-[90vh] min-h-[600px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-black/60 z-10" />
+      <section className="relative pt-24 pb-12 md:pt-28 md:pb-16 bg-stone-950 text-white overflow-hidden">
+        {/* Ambient background glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-stone-950/90 to-stone-950 pointer-events-none z-10" />
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/images/hero-biryani.png')" }}
+          className="absolute inset-0 bg-cover bg-center opacity-30 blur-xl scale-105 pointer-events-none"
+          style={{ backgroundImage: "url('/hero-banner.png')" }}
         />
-        
-        <div className="container relative z-20 mx-auto px-4 text-center flex flex-col items-center">
+
+        <div className="container relative z-20 mx-auto px-4 flex flex-col items-center text-center">
+          {/* Badge & Official Logo */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-4"
+            transition={{ duration: 0.6 }}
+            className="flex flex-col items-center mb-6"
           >
-            <Badge variant="outline" className="text-white border-white/30 bg-black/30 backdrop-blur-sm px-4 py-1.5 text-sm uppercase tracking-widest font-medium mb-6">
-              Welcome to Kurnool's Finest
+            <img
+              src="/darbar-logo.png"
+              alt="Darbar Restaurant Logo"
+              className="h-20 w-20 md:h-24 md:w-24 object-contain rounded-2xl shadow-2xl border-2 border-amber-500/40 mb-4 hover:scale-105 transition-transform"
+            />
+            <Badge variant="outline" className="text-amber-300 border-amber-500/40 bg-amber-950/40 backdrop-blur-md px-4 py-1.5 text-xs md:text-sm uppercase tracking-widest font-semibold">
+              Kurnool's Premium Multi-Cuisine Restaurant
             </Badge>
           </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+
+          {/* Official Cover / Hero Banner Image container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white drop-shadow-lg mb-6 leading-tight"
+            className="w-full max-w-5xl rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-amber-500/30 mb-8 bg-stone-900/80 backdrop-blur-sm"
           >
-            {RESTAURANT_DETAILS.name}
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl md:text-2xl text-white/90 max-w-2xl font-light mb-10 drop-shadow-md"
-          >
-            {RESTAURANT_DETAILS.tagline}
-          </motion.p>
-          
+            <img
+              src="/hero-banner.png"
+              alt="Darbar Multi-Cuisine Restaurant - Good Food, Great Mood. Every Time."
+              className="w-full h-auto object-contain md:object-cover max-h-[500px] mx-auto transition-all duration-700 hover:scale-[1.01]"
+              loading="eager"
+            />
+          </motion.div>
+
+          {/* Call to Action Buttons */}
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center justify-center"
           >
+            <Link href="/order">
+              <Button size="lg" className="w-full sm:w-auto text-base md:text-lg h-13 md:h-14 px-8 rounded-full shadow-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold">
+                Order Online
+              </Button>
+            </Link>
             <Link href="/menu">
-              <Button size="lg" className="w-full sm:w-auto text-lg h-14 px-8 rounded-full shadow-xl">
-                View Menu
+              <Button size="lg" variant="outline" className="w-full sm:w-auto text-base md:text-lg h-13 md:h-14 px-8 rounded-full bg-white/10 text-white border-amber-500/40 hover:bg-white/20 hover:text-white backdrop-blur-md font-semibold">
+                Explore Menu
               </Button>
             </Link>
             <a 
               href={`https://wa.me/${RESTAURANT_DETAILS.whatsappNumber}?text=${encodeURIComponent(RESTAURANT_DETAILS.whatsappMessage)}`}
               target="_blank"
               rel="noopener noreferrer"
+              className="w-full sm:w-auto"
             >
-              <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg h-14 px-8 rounded-full bg-white/10 text-white border-white/50 hover:bg-white/20 hover:text-white backdrop-blur-sm shadow-xl">
-                Order on WhatsApp
+              <Button size="lg" variant="outline" className="w-full sm:w-auto text-base md:text-lg h-13 md:h-14 px-8 rounded-full bg-emerald-950/40 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/60 hover:text-emerald-200 backdrop-blur-md font-semibold">
+                WhatsApp Order
               </Button>
             </a>
           </motion.div>
         </div>
-        
-        {/* Scroll indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center text-white/70"
-        >
-          <span className="text-sm font-medium tracking-widest uppercase mb-2">Scroll</span>
-          <div className="w-[1px] h-12 bg-white/30 overflow-hidden">
-            <motion.div 
-              className="w-full h-1/2 bg-white"
-              animate={{ y: [0, 48] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-            />
-          </div>
-        </motion.div>
       </section>
 
       {/* ABOUT SECTION */}
