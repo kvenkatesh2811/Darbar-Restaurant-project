@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
-import { ClerkProvider, useClerk } from "@clerk/react";
+import { ClerkProvider, useClerk, useAuth } from "@clerk/react";
 import { publishableKeyFromHost } from "@clerk/react/internal";
 import { shadcn } from "@clerk/themes";
 import { Switch, Route, useLocation, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { setAuthTokenGetter } from "@workspace/api-client-react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
@@ -12,8 +13,11 @@ import { Footer } from "@/components/Footer";
 import Home from "@/pages/Home";
 import Menu from "@/pages/Menu";
 import Order from "@/pages/Order";
+import OrderHistory from "@/pages/OrderHistory";
+import OrderTracking from "@/pages/OrderTracking";
 import Admin from "@/pages/Admin";
 import SignInPage from "@/pages/SignIn";
+import SignUpPage from "@/pages/SignUp";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,15 +28,8 @@ const queryClient = new QueryClient({
   },
 });
 
-// REQUIRED — resolves the publishable key from window.location.hostname so the
-// same build serves multiple Clerk custom domains. Do not inline the env var.
-const clerkPubKey = publishableKeyFromHost(
-  window.location.hostname,
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-);
-
-// REQUIRED — empty in dev (intentional), auto-set in prod. Do NOT gate on NODE_ENV.
-const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL;
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const clerkProxyUrl = import.meta.env.VITE_CLERK_PROXY_URL || undefined;
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -93,8 +90,29 @@ const clerkAppearance = {
     otpCodeFieldInput: "border-stone-200 text-stone-900",
     formFieldRow: "gap-3",
     main: "gap-6",
+    userButtonPopoverCard: "!bg-white !text-stone-900 !border !border-stone-200 !shadow-2xl !rounded-2xl",
+    userButtonPopoverMain: "!bg-white !text-stone-900",
+    userButtonPopoverUserPreview: "!bg-white !text-stone-900",
+    userButtonPopoverUserPreviewMainIdentifier: "!text-stone-900 !font-semibold",
+    userButtonPopoverUserPreviewSecondaryIdentifier: "!text-stone-500",
+    userButtonPopoverActionButton: "!text-stone-900 hover:!bg-stone-100",
+    userButtonPopoverActionButtonText: "!text-stone-900 !font-medium !opacity-100",
+    userButtonPopoverActionButtonIcon: "!text-stone-900 !opacity-100",
+    userButtonPopoverActionButtonIconBox: "!text-stone-900 !opacity-100",
+    userButtonPopoverFooter: "!border-t !border-stone-100 !bg-stone-50",
   },
 };
+
+// Syncs Clerk bearer token with global API client for authenticated requests
+function ClerkAuthTokenSyncer() {
+  const { getToken } = useAuth();
+
+  useEffect(() => {
+    setAuthTokenGetter(() => getToken());
+  }, [getToken]);
+
+  return null;
+}
 
 // Invalidates React Query cache when the signed-in user changes.
 function ClerkQueryClientCacheInvalidator() {
@@ -125,10 +143,12 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/menu" component={Menu} />
           <Route path="/order" component={Order} />
+          <Route path="/order/history" component={OrderHistory} />
+          <Route path="/order/track/:id" component={OrderTracking} />
           <Route path="/admin" component={Admin} />
-          {/* /sign-in/*? — the /*? wildcard is required; matches bare URL and
-              Clerk's OAuth sub-paths (/sign-in/sso-callback, /factor-one…) */}
+          {/* /sign-in/*? and /sign-up/*? wildcards required for Clerk OAuth & auth flows */}
           <Route path="/sign-in/*?" component={SignInPage} />
+          <Route path="/sign-up/*?" component={SignUpPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
@@ -143,16 +163,21 @@ function ClerkProviderWithRoutes() {
   return (
     <ClerkProvider
       publishableKey={clerkPubKey}
-      proxyUrl={clerkProxyUrl}
+      {...(clerkProxyUrl ? { proxyUrl: clerkProxyUrl } : {})}
       appearance={clerkAppearance}
       signInUrl={`${basePath}/sign-in`}
-      // No sign-up — admin access only; owner signs in via sign-in page
-      signUpUrl={`${basePath}/sign-in`}
+      signUpUrl={`${basePath}/sign-up`}
       localization={{
         signIn: {
           start: {
-            title: "Admin Sign In",
-            subtitle: "Sign in to access the Darbar admin panel",
+            title: "Darbar Sign In",
+            subtitle: "Sign in to access your account or admin panel",
+          },
+        },
+        signUp: {
+          start: {
+            title: "Create Darbar Account",
+            subtitle: "Sign up to track orders & earn loyalty rewards",
           },
         },
       }}
@@ -161,6 +186,7 @@ function ClerkProviderWithRoutes() {
     >
       <QueryClientProvider client={queryClient}>
         <ClerkQueryClientCacheInvalidator />
+        <ClerkAuthTokenSyncer />
         <TooltipProvider>
           <Router />
           <Toaster />

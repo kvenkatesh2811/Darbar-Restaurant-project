@@ -167,7 +167,7 @@ export default function Menu() {
                                 </div>
                                 
                                 <div className="mt-auto pt-4 flex justify-end">
-                                  <Link href="/order">
+                                  <Link href={`/order?add=${item.id}`}>
                                     <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
                                       Order
                                     </Button>

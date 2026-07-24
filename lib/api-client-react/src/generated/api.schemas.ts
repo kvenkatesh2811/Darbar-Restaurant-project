@@ -28,6 +28,9 @@ export interface MenuItem {
   isAvailable: boolean;
   /** @nullable */
   imageUrl?: string | null;
+  rating: number;
+  prepTimeMinutes: number;
+  isBestseller: boolean;
   createdAt: string;
 }
 
@@ -41,6 +44,9 @@ export interface MenuItemInput {
   isVeg: boolean;
   isAvailable?: boolean;
   imageUrl?: string;
+  rating?: number;
+  prepTimeMinutes?: number;
+  isBestseller?: boolean;
 }
 
 export interface MenuItemUpdate {
@@ -53,6 +59,9 @@ export interface MenuItemUpdate {
   isVeg?: boolean;
   isAvailable?: boolean;
   imageUrl?: string;
+  rating?: number;
+  prepTimeMinutes?: number;
+  isBestseller?: boolean;
 }
 
 export interface Special {
@@ -162,18 +171,57 @@ export interface OrderItem {
   price: number;
 }
 
+export interface DeliveryAddress {
+  houseNumber: string;
+  street: string;
+  area: string;
+  city: string;
+  landmark?: string;
+  pincode: string;
+}
+
+export interface DeliveryPartner {
+  name: string;
+  phone: string;
+  vehicleNumber: string;
+}
+
+export type OrderOrderType = typeof OrderOrderType[keyof typeof OrderOrderType];
+
+
+export const OrderOrderType = {
+  pickup: 'pickup',
+  delivery: 'delivery',
+} as const;
+
 export interface Order {
   id: number;
   customerName: string;
   phone: string;
+  email: string;
   pickupTime: string;
   /** @nullable */
   notes?: string | null;
   status: string;
   totalAmount: number;
   items: OrderItem[];
+  orderType: OrderOrderType;
+  paymentMethod: string;
+  deliveryCharge: number;
+  deliveryAddress?: DeliveryAddress | null;
+  /** @nullable */
+  customerId?: string | null;
+  deliveryPartner?: DeliveryPartner | null;
   createdAt: string;
 }
+
+export type OrderInputOrderType = typeof OrderInputOrderType[keyof typeof OrderInputOrderType];
+
+
+export const OrderInputOrderType = {
+  pickup: 'pickup',
+  delivery: 'delivery',
+} as const;
 
 export interface OrderInput {
   /** @minLength 1 */
@@ -181,9 +229,17 @@ export interface OrderInput {
   /** @minLength 1 */
   phone: string;
   /** @minLength 1 */
+  email: string;
+  /** @minLength 1 */
   pickupTime: string;
   notes?: string;
   items: OrderItem[];
+  orderType: OrderInputOrderType;
+  paymentMethod: string;
+  deliveryCharge?: number;
+  deliveryAddress?: DeliveryAddress;
+  customerId?: string;
+  redeemReward?: boolean;
 }
 
 export type OrderStatusUpdateStatus = typeof OrderStatusUpdateStatus[keyof typeof OrderStatusUpdateStatus];
@@ -194,6 +250,7 @@ export const OrderStatusUpdateStatus = {
   confirmed: 'confirmed',
   preparing: 'preparing',
   ready: 'ready',
+  out_for_delivery: 'out_for_delivery',
   completed: 'completed',
   cancelled: 'cancelled',
 } as const;
@@ -232,5 +289,6 @@ isVeg?: boolean;
 
 export type ListOrdersParams = {
 status?: string;
+customerId?: string;
 };
 

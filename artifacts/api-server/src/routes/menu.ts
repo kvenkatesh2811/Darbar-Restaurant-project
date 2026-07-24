@@ -13,7 +13,7 @@ import { deleteStorageImage } from "./upload";
 
 const router: IRouter = Router();
 
-router.get("/menu/items", async (req, res): Promise<void> => {
+router.get(["/menu/items", "/menu-items"], async (req, res): Promise<void> => {
   const parsed = ListMenuItemsQueryParams.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -38,6 +38,9 @@ router.get("/menu/items", async (req, res): Promise<void> => {
       isVeg: menuItemsTable.isVeg,
       isAvailable: menuItemsTable.isAvailable,
       imageUrl: menuItemsTable.imageUrl,
+      rating: menuItemsTable.rating,
+      prepTimeMinutes: menuItemsTable.prepTimeMinutes,
+      isBestseller: menuItemsTable.isBestseller,
       createdAt: menuItemsTable.createdAt,
     })
     .from(menuItemsTable)
@@ -49,6 +52,7 @@ router.get("/menu/items", async (req, res): Promise<void> => {
     items.map((item) => ({
       ...item,
       price: parseFloat(item.price),
+      rating: parseFloat(item.rating),
       categoryName: item.categoryName ?? item.categorySlug,
       createdAt: item.createdAt.toISOString(),
     })),
@@ -72,6 +76,9 @@ router.post("/menu/items", async (req, res): Promise<void> => {
       isVeg: parsed.data.isVeg,
       isAvailable: parsed.data.isAvailable ?? true,
       imageUrl: parsed.data.imageUrl,
+      ...(parsed.data.rating !== undefined ? { rating: String(parsed.data.rating) } : {}),
+      ...(parsed.data.prepTimeMinutes !== undefined ? { prepTimeMinutes: parsed.data.prepTimeMinutes } : {}),
+      ...(parsed.data.isBestseller !== undefined ? { isBestseller: parsed.data.isBestseller } : {}),
     })
     .returning();
 
@@ -84,6 +91,7 @@ router.post("/menu/items", async (req, res): Promise<void> => {
   res.status(201).json({
     ...item,
     price: parseFloat(item.price),
+    rating: parseFloat(item.rating),
     categoryName: category[0]?.name ?? item.categorySlug,
     createdAt: item.createdAt.toISOString(),
   });
@@ -117,6 +125,9 @@ router.patch("/menu/items/:id", async (req, res): Promise<void> => {
   if (parsed.data.isVeg !== undefined) updateData.isVeg = parsed.data.isVeg;
   if (parsed.data.isAvailable !== undefined) updateData.isAvailable = parsed.data.isAvailable;
   if (parsed.data.imageUrl !== undefined) updateData.imageUrl = parsed.data.imageUrl;
+  if (parsed.data.rating !== undefined) updateData.rating = String(parsed.data.rating);
+  if (parsed.data.prepTimeMinutes !== undefined) updateData.prepTimeMinutes = parsed.data.prepTimeMinutes;
+  if (parsed.data.isBestseller !== undefined) updateData.isBestseller = parsed.data.isBestseller;
 
   const [item] = await db
     .update(menuItemsTable)
@@ -145,6 +156,7 @@ router.patch("/menu/items/:id", async (req, res): Promise<void> => {
   res.json({
     ...item,
     price: parseFloat(item.price),
+    rating: parseFloat(item.rating),
     categoryName: category[0]?.name ?? item.categorySlug,
     createdAt: item.createdAt.toISOString(),
   });

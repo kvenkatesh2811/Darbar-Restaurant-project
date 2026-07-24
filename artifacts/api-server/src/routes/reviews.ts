@@ -1,7 +1,8 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { eq } from "drizzle-orm";
 import { db, reviewsTable } from "@workspace/db";
 import { CreateReviewBody } from "@workspace/api-zod";
+import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
 
@@ -43,7 +44,7 @@ router.post("/reviews", async (req, res): Promise<void> => {
   });
 });
 
-router.get("/admin/reviews", async (_req, res): Promise<void> => {
+router.get("/admin/reviews", requireAuth, async (_req, res): Promise<void> => {
   const reviews = await db
     .select()
     .from(reviewsTable)
@@ -57,8 +58,9 @@ router.get("/admin/reviews", async (_req, res): Promise<void> => {
   );
 });
 
-router.patch("/admin/reviews/:id", async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+router.patch("/admin/reviews/:id", requireAuth, async (req, res): Promise<void> => {
+  const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(idParam, 10);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid id" });
     return;

@@ -5,6 +5,8 @@
  * Darbar Multi-Cuisine Restaurant API
  * OpenAPI spec version: 0.1.0
  */
+import type { DeliveryAddress } from './deliveryAddress';
+import type { OrderInputOrderType } from './orderInputOrderType';
 import type { OrderItem } from './orderItem';
 
 export interface OrderInput {
@@ -13,7 +15,14 @@ export interface OrderInput {
   /** @minLength 1 */
   phone: string;
   /** @minLength 1 */
+  email: string;
+  /** @minLength 1 */
   pickupTime: string;
   notes?: string;
   items: OrderItem[];
+  orderType: OrderInputOrderType;
+  paymentMethod: string;
+  deliveryCharge?: number;
+  deliveryAddress?: DeliveryAddress;
+  customerId?: string;
 }

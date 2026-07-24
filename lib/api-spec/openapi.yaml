@@ -366,9 +366,13 @@ paths:
     get:
       operationId: listOrders
       tags: [orders]
-      summary: List all orders (admin)
+      summary: List all orders (admin, or by customer for order history)
       parameters:
         - name: status
+          in: query
+          schema:
+            type: string
+        - name: customerId
           in: query
           schema:
             type: string
@@ -532,6 +536,12 @@ components:
           type: boolean
         imageUrl:
           type: ["string", "null"]
+        rating:
+          type: number
+        prepTimeMinutes:
+          type: integer
+        isBestseller:
+          type: boolean
         createdAt:
           type: string
       required:
@@ -542,6 +552,9 @@ components:
         - categoryName
         - isVeg
         - isAvailable
+        - rating
+        - prepTimeMinutes
+        - isBestseller
         - createdAt
 
     MenuItemInput:
@@ -563,6 +576,12 @@ components:
           type: boolean
         imageUrl:
           type: string
+        rating:
+          type: number
+        prepTimeMinutes:
+          type: integer
+        isBestseller:
+          type: boolean
       required:
         - name
         - price
@@ -588,6 +607,12 @@ components:
           type: boolean
         imageUrl:
           type: string
+        rating:
+          type: number
+        prepTimeMinutes:
+          type: integer
+        isBestseller:
+          type: boolean
 
     Special:
       type: object
@@ -794,6 +819,42 @@ components:
         - quantity
         - price
 
+    DeliveryAddress:
+      type: object
+      properties:
+        houseNumber:
+          type: string
+        street:
+          type: string
+        area:
+          type: string
+        city:
+          type: string
+        landmark:
+          type: string
+        pincode:
+          type: string
+      required:
+        - houseNumber
+        - street
+        - area
+        - city
+        - pincode
+
+    DeliveryPartner:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        vehicleNumber:
+          type: string
+      required:
+        - name
+        - phone
+        - vehicleNumber
+
     Order:
       type: object
       properties:
@@ -802,6 +863,8 @@ components:
         customerName:
           type: string
         phone:
+          type: string
+        email:
           type: string
         pickupTime:
           type: string
@@ -815,16 +878,37 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OrderItem"
+        orderType:
+          type: string
+          enum: [pickup, delivery]
+        paymentMethod:
+          type: string
+        deliveryCharge:
+          type: number
+        deliveryAddress:
+          oneOf:
+            - $ref: "#/components/schemas/DeliveryAddress"
+            - type: "null"
+        customerId:
+          type: ["string", "null"]
+        deliveryPartner:
+          oneOf:
+            - $ref: "#/components/schemas/DeliveryPartner"
+            - type: "null"
         createdAt:
           type: string
       required:
         - id
         - customerName
         - phone
+        - email
         - pickupTime
         - status
         - totalAmount
         - items
+        - orderType
+        - paymentMethod
+        - deliveryCharge
         - createdAt
 
     OrderInput:
@@ -836,6 +920,9 @@ components:
         phone:
           type: string
           minLength: 1
+        email:
+          type: string
+          minLength: 1
         pickupTime:
           type: string
           minLength: 1
@@ -845,18 +932,32 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OrderItem"
+        orderType:
+          type: string
+          enum: [pickup, delivery]
+        paymentMethod:
+          type: string
+        deliveryCharge:
+          type: number
+        deliveryAddress:
+          $ref: "#/components/schemas/DeliveryAddress"
+        customerId:
+          type: string
       required:
         - customerName
         - phone
+        - email
         - pickupTime
         - items
+        - orderType
+        - paymentMethod
 
     OrderStatusUpdate:
       type: object
       properties:
         status:
           type: string
-          enum: [pending, confirmed, preparing, ready, completed, cancelled]
+          enum: [pending, confirmed, preparing, ready, out_for_delivery, completed, cancelled]
       required:
         - status
 

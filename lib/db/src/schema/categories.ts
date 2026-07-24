@@ -1,6 +1,6 @@
 import { pgTable, text, serial, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const categoriesTable = pgTable("categories", {
   id: serial("id").primaryKey(),
@@ -9,6 +9,6 @@ export const categoriesTable = pgTable("categories", {
   displayOrder: integer("display_order").notNull().default(0),
 });
 
-export const insertCategorySchema = createInsertSchema(categoriesTable).omit({ id: true });
+export const insertCategorySchema = createInsertSchema(categoriesTable).omit({ id: true }) as any;
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categoriesTable.$inferSelect;

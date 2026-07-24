@@ -5,3 +5,6 @@ export * from "./reviews";
 export * from "./feedback";
 export * from "./leads";
 export * from "./orders";
+export * from "./loyalty";
+export * from "./admin-users";
+

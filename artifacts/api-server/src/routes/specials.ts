@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { eq } from "drizzle-orm";
 import { db, specialsTable } from "@workspace/db";
 import {
@@ -6,6 +6,7 @@ import {
   UpdateSpecialParams,
   UpdateSpecialBody,
 } from "@workspace/api-zod";
+import { requireAuth } from "../middlewares/requireAuth";
 import { deleteStorageImage } from "./upload";
 
 const router: IRouter = Router();
@@ -103,7 +104,7 @@ router.patch("/specials/:id", async (req, res): Promise<void> => {
   });
 });
 
-router.get("/admin/specials", async (_req, res): Promise<void> => {
+router.get("/admin/specials", requireAuth, async (_req, res): Promise<void> => {
   const specials = await db
     .select()
     .from(specialsTable)
@@ -118,8 +119,9 @@ router.get("/admin/specials", async (_req, res): Promise<void> => {
   );
 });
 
-router.delete("/specials/:id", async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+router.delete("/specials/:id", requireAuth, async (req, res): Promise<void> => {
+  const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(idParam, 10);
   if (isNaN(id)) {
     res.status(400).json({ error: "Invalid id" });
     return;

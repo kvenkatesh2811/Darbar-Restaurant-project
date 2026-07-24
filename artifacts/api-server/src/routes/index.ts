@@ -8,6 +8,8 @@ import leadsRouter from "./leads";
 import ordersRouter from "./orders";
 import statsRouter from "./stats";
 import uploadRouter from "./upload";
+import loyaltyRouter from "./loyalty";
+import adminUsersRouter from "./admin-users";
 
 const router: IRouter = Router();
 
@@ -20,5 +22,7 @@ router.use(feedbackRouter);
 router.use(leadsRouter);
 router.use(ordersRouter);
 router.use(statsRouter);
+router.use(loyaltyRouter);
+router.use(adminUsersRouter);
 
 export default router;

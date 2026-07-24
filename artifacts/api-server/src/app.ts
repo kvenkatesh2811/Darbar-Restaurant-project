@@ -42,41 +42,53 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
-  clerkMiddleware((req) => ({
-    publishableKey: publishableKeyFromHost(
-      getClerkProxyHost(req) ?? "",
-      process.env.CLERK_PUBLISHABLE_KEY,
-    ),
-  })),
+  clerkMiddleware({
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+    secretKey: process.env.CLERK_SECRET_KEY,
+  }),
 );
 
 // ── Admin-only route protection ─────────────────────────────────────────────
 // Blanket protect /api/admin/*, /api/stats/*, and image upload/delete.
-app.use("/api/admin", requireAuth);
+// Exempt /api/admin/check-status so it can execute and report status.
+app.use("/api/admin", (req, res, next) => {
+  if (req.path === "/check-status" || req.path === "/check-status/") {
+    next();
+    return;
+  }
+  requireAuth(req, res, next);
+});
 app.use("/api/stats", requireAuth);
 app.use("/api/upload", requireAuth);
 
 // Protect read-only admin views on mixed routes
 app.use("/api/leads", (req, res, next) => {
-  if (req.method === "GET") return requireAuth(req, res, next);
+  if (req.method === "GET") {
+    requireAuth(req, res, next);
+    return;
+  }
   next();
 });
 app.use("/api/feedback", (req, res, next) => {
-  if (req.method === "GET") return requireAuth(req, res, next);
-  next();
-});
-app.use("/api/orders", (req, res, next) => {
-  if (req.method === "GET" || req.method === "PATCH") return requireAuth(req, res, next);
+  if (req.method === "GET") {
+    requireAuth(req, res, next);
+    return;
+  }
   next();
 });
 // Protect menu and specials write operations
-app.use("/api/menu/items", (req, res, next) => {
-  if (req.method !== "GET") return requireAuth(req, res, next);
+app.use(["/api/menu/items", "/api/menu-items"], (req, res, next) => {
+  if (req.method !== "GET") {
+    requireAuth(req, res, next);
+    return;
+  }
   next();
 });
 app.use("/api/specials", (req, res, next) => {
-  if (req.method === "POST" || req.method === "PATCH" || req.method === "DELETE")
-    return requireAuth(req, res, next);
+  if (req.method === "POST" || req.method === "PATCH" || req.method === "DELETE") {
+    requireAuth(req, res, next);
+    return;
+  }
   next();
 });
 

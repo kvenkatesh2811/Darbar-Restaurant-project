@@ -2,12 +2,28 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useUser, UserButton } from "@clerk/react";
+import { useQuery } from "@tanstack/react-query";
 
 export function Navbar() {
   const [location] = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const { isSignedIn } = useUser();
+
+  const { data: adminStatus } = useQuery({
+    queryKey: ["admin-status", isSignedIn],
+    queryFn: async () => {
+      if (!isSignedIn) return { isAdmin: false };
+      const res = await fetch("/api/admin/check-status");
+      if (!res.ok) return { isAdmin: false };
+      return res.json() as Promise<{ isAdmin: boolean }>;
+    },
+    enabled: !!isSignedIn,
+  });
+
+  const isAdmin = adminStatus?.isAdmin ?? false;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
@@ -32,10 +48,12 @@ export function Navbar() {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  const publicLinks = [
+  const links = [
     { href: "/", label: "Home" },
     { href: "/menu", label: "Menu" },
     { href: "/order", label: "Order Online" },
+    ...(isSignedIn ? [{ href: "/order/history", label: "My Orders" }] : []),
+    ...(isAdmin ? [{ href: "/admin", label: "Admin Panel" }] : []),
   ];
 
   const linkClass = (href: string) =>
@@ -69,11 +87,27 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
-          {publicLinks.map((link) => (
+          {links.map((link) => (
             <Link key={link.href} href={link.href} className={linkClass(link.href)}>
               {link.label}
             </Link>
           ))}
+          {isSignedIn ? (
+            <UserButton userProfileMode="modal" />
+          ) : (
+            <>
+              <Link href="/sign-in">
+                <Button variant="ghost" size="sm" className={isScrolled || location !== "/" ? "" : "text-white hover:bg-white/20 hover:text-white"}>
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/sign-up">
+                <Button size="sm" className="rounded-full">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -87,6 +121,7 @@ export function Navbar() {
 
         {/* Mobile Nav Toggle */}
         <div className="md:hidden flex items-center gap-2">
+          {isSignedIn && <UserButton userProfileMode="modal" />}
           <Button
             variant="ghost"
             size="icon"
@@ -109,7 +144,7 @@ export function Navbar() {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg p-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
-          {publicLinks.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}

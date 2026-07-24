@@ -8,6 +8,8 @@
 
 export * from './category';
 export * from './dailyRevenue';
+export * from './deliveryAddress';
+export * from './deliveryPartner';
 export * from './feedback';
 export * from './feedbackInput';
 export * from './healthStatus';
@@ -20,7 +22,9 @@ export * from './menuItemInput';
 export * from './menuItemUpdate';
 export * from './order';
 export * from './orderInput';
+export * from './orderInputOrderType';
 export * from './orderItem';
+export * from './orderOrderType';
 export * from './orderStatusUpdate';
 export * from './orderStatusUpdateStatus';
 export * from './popularItem';

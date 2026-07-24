@@ -1484,7 +1484,7 @@ export const getListOrdersUrl = (params?: ListOrdersParams,) => {
 }
 
 /**
- * @summary List all orders (admin)
+ * @summary List all orders (admin, or by customer for order history)
  */
 export const listOrders = async (params?: ListOrdersParams, options?: RequestInit): Promise<Order[]> => {
 
@@ -1531,7 +1531,7 @@ export type ListOrdersQueryError = ErrorType<unknown>
 
 
 /**
- * @summary List all orders (admin)
+ * @summary List all orders (admin, or by customer for order history)
  */
 
 export function useListOrders<TData = Awaited<ReturnType<typeof listOrders>>, TError = ErrorType<unknown>>(

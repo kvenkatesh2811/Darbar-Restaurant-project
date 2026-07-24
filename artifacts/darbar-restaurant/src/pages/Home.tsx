@@ -224,10 +224,10 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="order-2 md:order-1 relative rounded-2xl overflow-hidden aspect-[4/3] shadow-2xl">
-                <img 
-                  src={featuredSpecial.imageUrl || "/images/gallery-biryani.png"} 
+                <DishImage 
+                  src={featuredSpecial.imageUrl} 
                   alt={featuredSpecial.dishName}
-                  className="object-cover w-full h-full hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full aspect-[4/3] [&_img]:hover:scale-105 [&_img]:transition-transform [&_img]:duration-700"
                 />
                 <div className="absolute top-4 left-4">
                   <Badge className="bg-primary text-white hover:bg-primary px-4 py-1.5 text-sm uppercase tracking-widest">

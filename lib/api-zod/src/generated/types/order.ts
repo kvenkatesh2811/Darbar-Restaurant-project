@@ -5,17 +5,28 @@
  * Darbar Multi-Cuisine Restaurant API
  * OpenAPI spec version: 0.1.0
  */
+import type { DeliveryAddress } from './deliveryAddress';
+import type { DeliveryPartner } from './deliveryPartner';
 import type { OrderItem } from './orderItem';
+import type { OrderOrderType } from './orderOrderType';
 
 export interface Order {
   id: number;
   customerName: string;
   phone: string;
+  email: string;
   pickupTime: string;
   /** @nullable */
   notes?: string | null;
   status: string;
   totalAmount: number;
   items: OrderItem[];
+  orderType: OrderOrderType;
+  paymentMethod: string;
+  deliveryCharge: number;
+  deliveryAddress?: DeliveryAddress | null;
+  /** @nullable */
+  customerId?: string | null;
+  deliveryPartner?: DeliveryPartner | null;
   createdAt: string;
 }

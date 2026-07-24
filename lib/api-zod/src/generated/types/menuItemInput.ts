@@ -16,4 +16,7 @@ export interface MenuItemInput {
   isVeg: boolean;
   isAvailable?: boolean;
   imageUrl?: string;
+  rating?: number;
+  prepTimeMinutes?: number;
+  isBestseller?: boolean;
 }

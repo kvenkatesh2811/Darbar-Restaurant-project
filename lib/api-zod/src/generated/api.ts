@@ -35,6 +35,9 @@ export const ListMenuItemsResponseItem = zod.object({
   "isVeg": zod.boolean(),
   "isAvailable": zod.boolean(),
   "imageUrl": zod.string().nullish(),
+  "rating": zod.number(),
+  "prepTimeMinutes": zod.number(),
+  "isBestseller": zod.boolean(),
   "createdAt": zod.string()
 })
 export const ListMenuItemsResponse = zod.array(ListMenuItemsResponseItem)
@@ -55,7 +58,10 @@ export const CreateMenuItemBody = zod.object({
   "categorySlug": zod.string(),
   "isVeg": zod.boolean(),
   "isAvailable": zod.boolean().optional(),
-  "imageUrl": zod.string().optional()
+  "imageUrl": zod.string().optional(),
+  "rating": zod.number().optional(),
+  "prepTimeMinutes": zod.number().optional(),
+  "isBestseller": zod.boolean().optional()
 })
 
 
@@ -78,7 +84,10 @@ export const UpdateMenuItemBody = zod.object({
   "categorySlug": zod.string().optional(),
   "isVeg": zod.boolean().optional(),
   "isAvailable": zod.boolean().optional(),
-  "imageUrl": zod.string().optional()
+  "imageUrl": zod.string().optional(),
+  "rating": zod.number().optional(),
+  "prepTimeMinutes": zod.number().optional(),
+  "isBestseller": zod.boolean().optional()
 })
 
 export const UpdateMenuItemResponse = zod.object({
@@ -91,6 +100,9 @@ export const UpdateMenuItemResponse = zod.object({
   "isVeg": zod.boolean(),
   "isAvailable": zod.boolean(),
   "imageUrl": zod.string().nullish(),
+  "rating": zod.number(),
+  "prepTimeMinutes": zod.number(),
+  "isBestseller": zod.boolean(),
   "createdAt": zod.string()
 })
 
@@ -327,16 +339,18 @@ export const CreateLeadBody = zod.object({
 
 
 /**
- * @summary List all orders (admin)
+ * @summary List all orders (admin, or by customer for order history)
  */
 export const ListOrdersQueryParams = zod.object({
-  "status": zod.coerce.string().optional()
+  "status": zod.coerce.string().optional(),
+  "customerId": zod.coerce.string().optional()
 })
 
 export const ListOrdersResponseItem = zod.object({
   "id": zod.number(),
   "customerName": zod.string(),
   "phone": zod.string(),
+  "email": zod.string(),
   "pickupTime": zod.string(),
   "notes": zod.string().nullish(),
   "status": zod.string(),
@@ -347,6 +361,23 @@ export const ListOrdersResponseItem = zod.object({
   "quantity": zod.number(),
   "price": zod.number()
 })),
+  "orderType": zod.enum(['pickup', 'delivery']),
+  "paymentMethod": zod.string(),
+  "deliveryCharge": zod.number(),
+  "deliveryAddress": zod.union([zod.object({
+  "houseNumber": zod.string(),
+  "street": zod.string(),
+  "area": zod.string(),
+  "city": zod.string(),
+  "landmark": zod.string().optional(),
+  "pincode": zod.string()
+}),zod.null()]).optional(),
+  "customerId": zod.string().nullish(),
+  "deliveryPartner": zod.union([zod.object({
+  "name": zod.string(),
+  "phone": zod.string(),
+  "vehicleNumber": zod.string()
+}),zod.null()]).optional(),
   "createdAt": zod.string()
 })
 export const ListOrdersResponse = zod.array(ListOrdersResponseItem)
@@ -363,6 +394,7 @@ export const ListOrdersResponse = zod.array(ListOrdersResponseItem)
 export const CreateOrderBody = zod.object({
   "customerName": zod.string().min(1),
   "phone": zod.string().min(1),
+  "email": zod.string().min(1),
   "pickupTime": zod.string().min(1),
   "notes": zod.string().optional(),
   "items": zod.array(zod.object({
@@ -370,7 +402,20 @@ export const CreateOrderBody = zod.object({
   "menuItemName": zod.string(),
   "quantity": zod.number(),
   "price": zod.number()
-}))
+})),
+  "orderType": zod.enum(['pickup', 'delivery']),
+  "paymentMethod": zod.string(),
+  "deliveryCharge": zod.number().optional(),
+  "deliveryAddress": zod.object({
+  "houseNumber": zod.string(),
+  "street": zod.string(),
+  "area": zod.string(),
+  "city": zod.string(),
+  "landmark": zod.string().optional(),
+  "pincode": zod.string()
+}).optional(),
+  "customerId": zod.string().optional(),
+  "redeemReward": zod.boolean().optional()
 })
 
 
@@ -385,6 +430,7 @@ export const GetOrderResponse = zod.object({
   "id": zod.number(),
   "customerName": zod.string(),
   "phone": zod.string(),
+  "email": zod.string(),
   "pickupTime": zod.string(),
   "notes": zod.string().nullish(),
   "status": zod.string(),
@@ -395,6 +441,23 @@ export const GetOrderResponse = zod.object({
   "quantity": zod.number(),
   "price": zod.number()
 })),
+  "orderType": zod.enum(['pickup', 'delivery']),
+  "paymentMethod": zod.string(),
+  "deliveryCharge": zod.number(),
+  "deliveryAddress": zod.union([zod.object({
+  "houseNumber": zod.string(),
+  "street": zod.string(),
+  "area": zod.string(),
+  "city": zod.string(),
+  "landmark": zod.string().optional(),
+  "pincode": zod.string()
+}),zod.null()]).optional(),
+  "customerId": zod.string().nullish(),
+  "deliveryPartner": zod.union([zod.object({
+  "name": zod.string(),
+  "phone": zod.string(),
+  "vehicleNumber": zod.string()
+}),zod.null()]).optional(),
   "createdAt": zod.string()
 })
 
@@ -407,13 +470,14 @@ export const UpdateOrderStatusParams = zod.object({
 })
 
 export const UpdateOrderStatusBody = zod.object({
-  "status": zod.enum(['pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'])
+  "status": zod.enum(['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'completed', 'cancelled'])
 })
 
 export const UpdateOrderStatusResponse = zod.object({
   "id": zod.number(),
   "customerName": zod.string(),
   "phone": zod.string(),
+  "email": zod.string(),
   "pickupTime": zod.string(),
   "notes": zod.string().nullish(),
   "status": zod.string(),
@@ -424,6 +488,23 @@ export const UpdateOrderStatusResponse = zod.object({
   "quantity": zod.number(),
   "price": zod.number()
 })),
+  "orderType": zod.enum(['pickup', 'delivery']),
+  "paymentMethod": zod.string(),
+  "deliveryCharge": zod.number(),
+  "deliveryAddress": zod.union([zod.object({
+  "houseNumber": zod.string(),
+  "street": zod.string(),
+  "area": zod.string(),
+  "city": zod.string(),
+  "landmark": zod.string().optional(),
+  "pincode": zod.string()
+}),zod.null()]).optional(),
+  "customerId": zod.string().nullish(),
+  "deliveryPartner": zod.union([zod.object({
+  "name": zod.string(),
+  "phone": zod.string(),
+  "vehicleNumber": zod.string()
+}),zod.null()]).optional(),
   "createdAt": zod.string()
 })
 

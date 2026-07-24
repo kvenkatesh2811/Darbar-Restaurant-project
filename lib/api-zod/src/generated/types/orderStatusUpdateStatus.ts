@@ -14,6 +14,7 @@ export const OrderStatusUpdateStatus = {
   confirmed: 'confirmed',
   preparing: 'preparing',
   ready: 'ready',
+  out_for_delivery: 'out_for_delivery',
   completed: 'completed',
   cancelled: 'cancelled',
 } as const;

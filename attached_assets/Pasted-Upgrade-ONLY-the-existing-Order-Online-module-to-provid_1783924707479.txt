@@ -1,0 +1,357 @@
+Upgrade ONLY the existing Order Online module to provide a premium Swiggy/Zomato-style ordering experience.
+
+IMPORTANT:
+
+Do NOT modify any other part of the project.
+
+Do NOT overwrite existing code.
+
+Do NOT redesign the Home page.
+
+Do NOT change the Admin Panel.
+
+Do NOT modify Authentication.
+
+Do NOT modify Supabase configuration.
+
+Do NOT modify Clerk.
+
+Do NOT modify existing APIs unless absolutely required.
+
+Do NOT touch any unrelated feature.
+
+Reuse existing components wherever possible.
+
+Maintain the current Next.js + TypeScript + Tailwind CSS + Supabase architecture.
+
+==================================================
+SWIGGY / ZOMATO STYLE ORDERING EXPERIENCE
+==================================================
+
+Transform ONLY the existing Order Online page into a modern food ordering experience.
+
+Keep all existing functionality.
+
+Improve only the ordering workflow.
+
+==================================================
+MENU CARDS
+==================================================
+
+Each food card should include:
+
+• Large food image
+• Food name
+• Category
+• Description
+• Rating
+• Preparation time
+• Price
+• Veg / Non-Veg badge
+• Bestseller badge (if applicable)
+• Today's Special badge
+• Add to Cart button
+
+Card design should look premium like Swiggy/Zomato.
+
+==================================================
+ADD TO CART EXPERIENCE
+==================================================
+
+When clicking Add to Cart:
+
+• Animate the button
+• Update cart count instantly
+• Show React Hot Toast
+
+"Added to cart"
+
+Allow:
+
+✓ Increase quantity
+
+✓ Decrease quantity
+
+✓ Remove item
+
+✓ Clear cart
+
+==================================================
+SHOPPING CART
+==================================================
+
+Create a modern slide-in cart.
+
+Display:
+
+Food image
+
+Food name
+
+Quantity
+
+Price
+
+Increase
+
+Decrease
+
+Remove
+
+Subtotal
+
+GST
+
+Delivery charge
+
+Grand Total
+
+Estimated delivery time
+
+==================================================
+ORDER TYPE
+==================================================
+
+Customer can choose:
+
+○ Delivery
+
+○ Pickup
+
+If Pickup:
+
+Hide delivery charge.
+
+If Delivery:
+
+Show address fields.
+
+==================================================
+DELIVERY ADDRESS
+==================================================
+
+Collect:
+
+Name
+
+Phone
+
+House Number
+
+Street
+
+Area
+
+City
+
+Landmark
+
+Pincode
+
+Save with order.
+
+==================================================
+PAYMENT OPTIONS
+==================================================
+
+Display modern payment cards.
+
+Options:
+
+Cash on Delivery
+
+Cash on Pickup
+
+UPI
+
+Google Pay
+
+PhonePe
+
+Paytm
+
+Razorpay
+
+Highlight selected option.
+
+==================================================
+ORDER CONFIRMATION
+==================================================
+
+After placing order:
+
+Generate:
+
+Order ID
+
+Estimated preparation time
+
+Estimated delivery time
+
+Payment status
+
+Order status
+
+==================================================
+ORDER TRACKING
+==================================================
+
+Create a beautiful Order Tracking page.
+
+Statuses:
+
+Order Received
+
+Restaurant Accepted
+
+Preparing Food
+
+Food Ready
+
+Out for Delivery
+
+Delivered
+
+Display:
+
+Animated progress bar
+
+Timeline
+
+Estimated arrival
+
+Delivery person information
+
+==================================================
+DELIVERY PARTNER
+==================================================
+
+Show:
+
+Delivery partner photo placeholder
+
+Name
+
+Phone Number
+
+Vehicle Number
+
+Live order status
+
+Estimated arrival time
+
+This should be dynamic and ready for future backend integration.
+
+==================================================
+ORDER HISTORY
+==================================================
+
+Customers should view:
+
+Previous orders
+
+Reorder button
+
+Payment status
+
+Delivered date
+
+==================================================
+FOOD IMAGES
+==================================================
+
+Every menu item must display its correct food image.
+
+Load dynamically from Supabase Storage.
+
+Never hardcode image URLs.
+
+==================================================
+ANIMATIONS
+==================================================
+
+Add:
+
+Smooth cart animations
+
+Button animations
+
+Loading skeletons
+
+Page transitions
+
+==================================================
+RESPONSIVE
+==================================================
+
+Fully responsive.
+
+Desktop
+
+Tablet
+
+Mobile
+
+==================================================
+VERIFICATION
+==================================================
+
+✓ Food cards display images.
+
+✓ Add to Cart works.
+
+✓ Remove Item works.
+
+✓ Quantity updates instantly.
+
+✓ Cart totals calculate correctly.
+
+✓ Delivery & Pickup selection works.
+
+✓ Payment selection works.
+
+✓ Order confirmation works.
+
+✓ Order tracking page works.
+
+✓ Order history works.
+
+✓ No TypeScript errors.
+
+✓ No console errors.
+
+✓ No build errors.
+
+==================================================
+DO NOT TOUCH
+==================================================
+
+Do NOT modify:
+
+• Home Page
+
+• Hero Section
+
+• Popular Dishes
+
+• Today's Special
+
+• Gallery
+
+• Reviews
+
+• Contact
+
+• Admin Panel
+
+• Authentication
+
+• Supabase configuration
+
+• Clerk
+
+• Existing database schema unless absolutely necessary
+
+• Existing APIs unless required for Order module
+
+Only improve the Order Online module while preserving all existing functionality.

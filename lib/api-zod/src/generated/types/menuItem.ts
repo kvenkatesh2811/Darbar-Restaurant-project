@@ -18,5 +18,8 @@ export interface MenuItem {
   isAvailable: boolean;
   /** @nullable */
   imageUrl?: string | null;
+  rating: number;
+  prepTimeMinutes: number;
+  isBestseller: boolean;
   createdAt: string;
 }

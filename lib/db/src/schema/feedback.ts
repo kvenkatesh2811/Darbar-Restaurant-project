@@ -1,6 +1,6 @@
 import { pgTable, text, serial, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const feedbackTable = pgTable("feedback", {
   id: serial("id").primaryKey(),
@@ -11,6 +11,6 @@ export const feedbackTable = pgTable("feedback", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const insertFeedbackSchema = createInsertSchema(feedbackTable).omit({ id: true, createdAt: true });
+export const insertFeedbackSchema = createInsertSchema(feedbackTable).omit({ id: true, createdAt: true }) as any;
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
 export type Feedback = typeof feedbackTable.$inferSelect;
