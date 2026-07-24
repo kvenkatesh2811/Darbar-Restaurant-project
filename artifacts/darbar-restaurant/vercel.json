@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://YOUR_RENDER_API_URL/api/:path*"
+      "destination": "https://darbar-api-server.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
